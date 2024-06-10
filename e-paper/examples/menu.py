@@ -20,47 +20,33 @@ try:
     
     epd = epd2in13_V4.EPD()
     logging.info("init and Clear")
-#    epd.init()
-#    epd.Clear(0xFF)
+    epd.init()
+    epd.Clear(0xFF)
 
     # Drawing on the image
     font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
     font24 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 24)
     
-    epd.init()
-        # # partial update
-    logging.info("4.show time...")
-    time_image = Image.new('1', (epd.height, epd.width), 255)
-    time_draw = ImageDraw.Draw(time_image)
-    epd.displayPartBaseImage(epd.getbuffer(time_image))
-    num = 0
-    while (True):
-        time_draw.rectangle([(0,0),(255,122)],fill = 0)
-        time_draw.rectangle([(0,0),(250,120)],outline = 0)
-        time_draw.text((60, 20), 'menu', font = font15, fill = 0)
-        time_draw.text((60, 40), 'marv1', font = font15, fill = 0)
-        time_draw.rectangle([(55,42),(120,18*num)],outline = 0)
-        time_draw.text((60, 60), 'zeile2', font = font15, fill = 0)
-        time_draw.rectangle((120, 80, 220, 105), fill = 255)
-        time_draw.text((120, 80), time.strftime('%H:%M:%S'), font = font24, fill = 0)
-        epd.displayPartial(epd.getbuffer(time_image))
-        num = num + 1
-        if(num == 10):
-            break
     
-    logging.info("Clear...")
-    epd.init()
+    # read bmp file 
+    
+    # read bmp file on window
     epd.Clear(0xFF)
+    image1 = Image.new('1', (epd.height, epd.width), 122)  # 255: clear the frame
+    bmp = Image.open(os.path.join(picdir, 'cat1.bmp'))
+    bmp1 = Image.open(os.path.join(picdir, 'cat2.bmp'))
+    bmp2 = Image.open(os.path.join(picdir, 'cat3.bmp'))
+    bmp3 = Image.open(os.path.join(picdir, 'cat4.bmp'))
+    #bmp = bmp.resize((122, 250), Image.ANTIALIAS)
+    
+    image1.paste(bmp, (0, 0))
+    image1.paste(bmp1, (0, 50))
+    image1.paste(bmp2, (96, 0))
+    image1.paste(bmp3, (96, 50))
+    epd.display_fast(epd.getbuffer(image1))
+    time.sleep(15)
 
-        
-        
     
-    
-    logging.info("Clear...")
-    epd.init()
-    #epd.Clear(0xFF)
-    
-    logging.info("Goto Sleep...")
     epd.sleep()
         
 except IOError as e:

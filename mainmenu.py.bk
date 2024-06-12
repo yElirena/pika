@@ -51,7 +51,7 @@ def untenlinks():
 
 
 def untenrechts():
-    global menu, menu_screen
+    global menu
     print("l")
     menu.rectangle([(2,2),(86,44)],outline = 255)
     menu.rectangle([(0,50), (20, 60)], outline = 255)
@@ -81,7 +81,6 @@ try:
 
     menu_screen = Image.new('1', (epd.height, epd.width), 255)
     menu = ImageDraw.Draw(menu_screen)
-
     bmp = Image.open(os.path.join(picdir, 'cat1.bmp'))
     bmp1 = Image.open(os.path.join(picdir, 'cat2.bmp'))
     bmp2 = Image.open(os.path.join(picdir, 'cat3.bmp'))
@@ -90,11 +89,9 @@ try:
     menu_screen.paste(bmp1, (140, 5))
     menu_screen.paste(bmp2, (20, 64))
     menu_screen.paste(bmp3, (140, 64))
-
     menu_screen = menu_screen.rotate(180) # rotate
 
     epd.displayPartBaseImage(epd.getbuffer(menu_screen))
-
 
     num = 0
     while (True):

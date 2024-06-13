@@ -9,7 +9,7 @@ tb = TonalBuzzer(5)
 def sb1():
     print("Goodbye 16 oben!")
     global tb
-    f = 250.0
+    f = 392.0
     tb.play(Tone.from_frequency(f))
     sleep(0.2)
     tb.stop()
@@ -18,7 +18,7 @@ def sb1():
 def sb2():
     print("Goodbye! 19 links")
     global tb
-    f = 300.0
+    f = 440.0
     tb.play(Tone.from_frequency(f))
     sleep(0.2)
     tb.stop()
@@ -26,7 +26,7 @@ def sb2():
 def sb3():
     print("Goodbye! 20 rechts" )
     global tb
-    f = 500.0
+    f = 493.88
     tb.play(Tone.from_frequency(f))
     sleep(0.2)
     tb.stop()
@@ -34,7 +34,7 @@ def sb3():
 def sb4():
     print("Goodbye! 26 unten")
     global tb
-    f = 800.0
+    f = 523.25
     tb.play(Tone.from_frequency(f))
     sleep(0.2)
     tb.stop()
@@ -42,7 +42,7 @@ def sb4():
 def sb5():
     print("Goodbye! 6 a")
     global tb
-    f = 850.0
+    f = 587.33
     tb.play(Tone.from_frequency(f))
     sleep(0.2)
     tb.stop()
@@ -50,7 +50,7 @@ def sb5():
 def sb6():
     print("Goodbye! 12 b")
     global tb
-    f = 750.0
+    f = 659.25
     tb.play(Tone.from_frequency(f))
     sleep(0.2)
     tb.stop()

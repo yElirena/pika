@@ -18,47 +18,48 @@ from signal import pause
 
 
 def obenlinks():
-    global menu
+    global draw1 ,final_image
     print("o")
-    menu.rectangle([(0, 0), (86,44)], outline = 0)
-    menu.rectangle([(0, 50), (20, 60)], outline = 255)
-    menu.rectangle([(50,0),(80,80)],outline = 255)
-    menu.rectangle([(50,50),(80,80)],outline = 255)
+    
+    draw1.rectangle([(248, 120), (127, 63)], outline = 0, width=3)
+    draw1.rectangle([(123, 120), (2, 59)], outline = 255, width=3)
+    draw1.rectangle([(248, 59), (123, 2)], outline = 255, width=3)
+    draw1.rectangle([(123, 59), (2, 2)], outline = 255, width=3)
     time.sleep(0.5)
-    epd.displayPartial(epd.getbuffer(menu_screen))
+    epd.displayPartial(epd.getbuffer(final_image))
 
 
 def obenrechts():
-    global menu
+    global draw1 ,final_image
     print("r")
-    menu.rectangle([(0,0),(50,50)],outline = 255)
-    menu.rectangle([(0,50), (20, 60)], outline = 0)
-    menu.rectangle([(50,0),(80,80)],outline = 255)
-    menu.rectangle([(50,50),(80,80)],outline = 255)
+    draw1.rectangle([(248, 120), (127, 63)], outline = 255, width=3)
+    draw1.rectangle([(123, 120), (2, 59)], outline = 0, width=3)
+    draw1.rectangle([(248, 59), (123, 2)], outline = 255, width=3)
+    draw1.rectangle([(123, 59), (2, 2)], outline = 255, width=3)
     time.sleep(0.5)
-    epd.displayPartial(epd.getbuffer(menu_screen))
+    epd.displayPartial(epd.getbuffer(final_image))
 
 
 def untenlinks():
-    global menu
+    global draw1 ,final_image
     print("u")
-    menu.rectangle([(0,0),(50,50)],outline = 255)
-    menu.rectangle([(0,50), (20, 60)], outline = 255)
-    menu.rectangle([(50,0),(80,80)],outline = 0)
-    menu.rectangle([(50,50),(80,80)],outline = 255)
+    draw1.rectangle([(248, 120), (127, 63)], outline = 255, width=3)
+    draw1.rectangle([(123, 120), (2, 59)], outline = 255, width=3)
+    draw1.rectangle([(248, 59), (127, 2)], outline = 0, width=3)
+    draw1.rectangle([(123, 59), (2, 2)], outline = 255, width=3)
     time.sleep(0.5)
-    epd.displayPartial(epd.getbuffer(menu_screen))
+    epd.displayPartial(epd.getbuffer(final_image))
 
 
 def untenrechts():
-    global menu, menu_screen
+    global draw1 ,final_image
     print("l")
-    menu.rectangle([(2,2),(86,44)],outline = 255)
-    menu.rectangle([(0,50), (20, 60)], outline = 255)
-    menu.rectangle([(50,0),(80,80)],outline = 255)
-    menu.rectangle([(50,50),(80,80)],outline = 0)
+    draw1.rectangle([(248, 120), (127, 63)], outline = 255, width=3)
+    draw1.rectangle([(123, 120), (2, 59)], outline = 255, width=3)
+    draw1.rectangle([(248, 59), (127, 2)], outline = 255, width=3)
+    draw1.rectangle([(123, 59), (2, 2)], outline = 0, width=3)
     time.sleep(0.5)
-    epd.displayPartial(epd.getbuffer(menu_screen))
+    epd.displayPartial(epd.getbuffer(final_image))
 
 
 links = Button(19)
@@ -79,21 +80,40 @@ try:
 
 
 
-    menu_screen = Image.new('1', (epd.height, epd.width), 255)
-    menu = ImageDraw.Draw(menu_screen)
+    image = Image.new('1', (epd.height, epd.width), 255)
+    
+    draw = ImageDraw.Draw(image)
 
     bmp = Image.open(os.path.join(picdir, 'cat1.bmp'))
     bmp1 = Image.open(os.path.join(picdir, 'cat2.bmp'))
     bmp2 = Image.open(os.path.join(picdir, 'cat3.bmp'))
     bmp3 = Image.open(os.path.join(picdir, 'cat4.bmp'))
-    menu_screen.paste(bmp, (20, 5))
-    menu_screen.paste(bmp1, (140, 5))
-    menu_screen.paste(bmp2, (20, 64))
-    menu_screen.paste(bmp3, (140, 64))
 
-    menu_screen = menu_screen.rotate(180) # rotate
 
-    epd.displayPartBaseImage(epd.getbuffer(menu_screen))
+    image.paste(bmp, (20, 5))
+    image.paste(bmp1, (140, 5))
+    image.paste(bmp2, (20, 64))
+    image.paste(bmp3, (140, 64))
+
+    rotated_image = image.rotate(180, expand=True) # rotate
+
+    epd.displayPartBaseImage(epd.getbuffer(rotated_image))
+
+
+    original_width, original_height = image.size
+    rotated_width, rotated_height = rotated_image.size
+
+    offset_x = (rotated_width - original_width) // 2
+    offset_y = (rotated_height - original_height) // 2
+
+    final_image = Image.new('1', (rotated_width, rotated_height), 255)
+
+    #final_image = final_image.rotate(180)
+    final_image.paste(rotated_image)
+    draw1 = ImageDraw.Draw(final_image)
+    
+
+    epd.displayPartial(epd.getbuffer(final_image))
 
 
     num = 0

@@ -163,14 +163,14 @@ try:
     draw = ImageDraw.Draw(image)
  
     bmp = Image.open(os.path.join(picdir, 'cat1.bmp'))
-    bmp1 = Image.open(os.path.join(picdir, 'security.bmp'))
+    bmp1 = Image.open(os.path.join(picdir, 'checker.bmp'))
     bmp2 = Image.open(os.path.join(picdir, 'kona.bmp'))
     bmp3 = Image.open(os.path.join(picdir, 'breakout.bmp'))
  
-    draw.text((115, 8), 'Pika', font = font15, fill = 0)
+    draw.text((115, 8), 'Pika:', font = font15, fill = 0)
  
-    image.paste(bmp, (19, 27))
-    image.paste(bmp1, (135, 27))
+    image.paste(bmp, (19, 30))
+    image.paste(bmp1, (135, 30))
     image.paste(bmp2, (19, 80))
     image.paste(bmp3, (135, 80))
  

@@ -8,10 +8,20 @@ from signal import pause
 from gpiozero import TonalBuzzer
 from gpiozero.tones import Tone
 from time import sleep
+from PIL import Image,ImageDraw,ImageFont
+
+
+picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
+libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
+if os.path.exists(libdir):
+    sys.path.append(libdir)
 
 
 def sb1():
     print("GPIO 16 Button 'oben' was pressed!")
+    draw.rectangle((20, 80, 220, 105), fill = 255)
+    draw.text((20, 80), 'GPIO 16 Button: oben', font = font15, fill = 0)
+    epd.displayPartial(epd.getbuffer(image))
     global tb
     f = 392.0
     tb.play(Tone.from_frequency(f))
@@ -20,7 +30,10 @@ def sb1():
         
 
 def sb2():
-    print("Goodbye! 19 links")
+    print("GPIO 19 Button 'links' was pressed!")
+    draw.rectangle((20, 80, 220, 105), fill = 255)
+    draw.text((20, 80), 'GPIO 19 Button: links', font = font15, fill = 0)
+    epd.displayPartial(epd.getbuffer(image))
     global tb
     f = 440.0
     tb.play(Tone.from_frequency(f))
@@ -28,7 +41,10 @@ def sb2():
     tb.stop()
 
 def sb3():
-    print("Goodbye! 20 rechts" )
+    print("GPIO 20 Button 'rechts' was pressed!")
+    draw.rectangle((20, 80, 220, 105), fill = 255)
+    draw.text((20, 80), 'GPIO 20 Button: rechts', font = font15, fill = 0)
+    epd.displayPartial(epd.getbuffer(image))
     global tb
     f = 493.88
     tb.play(Tone.from_frequency(f))
@@ -36,7 +52,10 @@ def sb3():
     tb.stop()
 
 def sb4():
-    print("Goodbye! 26 unten")
+    print("GPIO 26 Button 'unten' was pressed!")
+    draw.rectangle((20, 80, 220, 105), fill = 255)
+    draw.text((20, 80), 'GPIO 26 Button: unten', font = font15, fill = 0)
+    epd.displayPartial(epd.getbuffer(image))
     global tb
     f = 523.25
     tb.play(Tone.from_frequency(f))
@@ -52,11 +71,12 @@ def sb5():
     tb.stop()
 
 def sb6():
+    draw.text
     print("Goodbye! 12 b")
     global tb
     f = 659.25
     tb.play(Tone.from_frequency(f))
-    sleep(5.2)
+    sleep(0.2)
     tb.stop()
 
 
@@ -70,9 +90,9 @@ btn_unten = Button(26)
 btn_a = Button(6)
 btn_b = Button(12)
 
-btn_links.when_pressed = sb1
-btn_rechts.when_pressed = sb2
-btn_oben.when_pressed = sb3
+btn_oben.when_pressed = sb1
+btn_links.when_pressed = sb2
+btn_rechts.when_pressed = sb3
 btn_unten.when_pressed = sb4
 btn_a.when_pressed = sb5
 btn_b.when_pressed = sb6
@@ -86,6 +106,8 @@ try:
 
     image = Image.new('1', (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
+    draw.text((115, 8), 'Buttontest:', font = font15, fill = 0)
+    epd.display_fast(epd.getbuffer(image))
 
 
     pause()

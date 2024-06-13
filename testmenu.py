@@ -58,13 +58,13 @@ feld_11.set_XY_0(115, 40)
 feld_11.set_XY_1(19, 8)
  
 field_array = [[feld_00, feld_01],
-               [feld_01, feld_11]]
+               [feld_10, feld_11]]
  
  
 main_menue = Menue()
 main_menue.set_feldarray(field_array)
 main_menue.set_current_field(field_array[0][0])
- 
+
  
 # Main Menü Programm
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
@@ -108,35 +108,34 @@ def draw_current_field():
  
  
 def press_logic(num):
-    match (num):
-        case 0:
-            if(main_menue.current_field.name == "Marv"):
-                main_menue.set_current_field(main_menue.field_array[0][0])
-                draw_current_field()
-            elif(main_menue.current_field.name == "Marie"):
-                main_menue.set_current_field(main_menue.field_array[1][0])
-                draw_current_field()
-        case 1:
-            if(main_menue.current_field.name == "Thomas"):
-                main_menue.set_current_field(main_menue.field_array[0][1])
-                draw_current_field()
-            elif(main_menue.current_field.name == "Roman"):
-                main_menue.set_current_field(main_menue.field_array[1][1])
-                draw_current_field()
-        case 2:
-            if(main_menue.current_field.name == "Roman"):
-                main_menue.set_current_field(main_menue.field_array[0][0])
-                draw_current_field()
-            elif(main_menue.current_field.name == "Marie"):
-                main_menue.set_current_field(main_menue.field_array[0][1])
-                draw_current_field()
-        case 3:
-            if(main_menue.current_field.name == "Thomas"):
-                main_menue.set_current_field(main_menue.field_array[1][0])
-                draw_current_field()
-            elif(main_menue.current_field.name == "Marv"):
-                main_menue.set_current_field(main_menue.field_array[1][1])
-                draw_current_field()
+    if num == 0:
+        if(main_menue.current_field.name == "Marv"):
+            main_menue.set_current_field(main_menue.field_array[0][0])
+            draw_current_field()
+        elif(main_menue.current_field.name == "Marie"):
+            main_menue.set_current_field(main_menue.field_array[1][0])
+            draw_current_field()
+    elif num == 1:
+        if(main_menue.current_field.name == "Thomas"):
+            main_menue.set_current_field(main_menue.field_array[0][1])
+            draw_current_field()
+        elif(main_menue.current_field.name == "Roman"):
+            main_menue.set_current_field(main_menue.field_array[1][1])
+            draw_current_field()
+    elif num == 2:
+        if(main_menue.current_field.name == "Roman"):
+            main_menue.set_current_field(main_menue.field_array[0][0])
+            draw_current_field()
+        elif(main_menue.current_field.name == "Marie"):
+            main_menue.set_current_field(main_menue.field_array[0][1])
+            draw_current_field()
+    elif num == 3:
+        if(main_menue.current_field.name == "Thomas"):
+            main_menue.set_current_field(main_menue.field_array[1][0])
+            draw_current_field()
+        elif(main_menue.current_field.name == "Marv"):
+            main_menue.set_current_field(main_menue.field_array[1][1])
+            draw_current_field()
  
  
 # gpio button
@@ -146,11 +145,11 @@ btn_oben = Button(16)
 btn_unten = Button(26)
 btn_a = Button(6)
 btn_b = Button(12)
- 
-btn_links.when_pressed = press_logic(0)
-btn_rechts.when_pressed = press_logic(1)
-btn_oben.when_pressed = press_logic(2)
-btn_unten.when_pressed = press_logic(3)
+
+btn_links.when_pressed = lambda: press_logic(0)
+btn_rechts.when_pressed = lambda: press_logic(1)
+btn_oben.when_pressed = lambda: press_logic(2)
+btn_unten.when_pressed = lambda: press_logic(3)
  
 font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
  
@@ -164,16 +163,16 @@ try:
     draw = ImageDraw.Draw(image)
  
     bmp = Image.open(os.path.join(picdir, 'cat1.bmp'))
-    bmp1 = Image.open(os.path.join(picdir, 'cat2.bmp'))
-    bmp2 = Image.open(os.path.join(picdir, 'cat3.bmp'))
-    bmp3 = Image.open(os.path.join(picdir, 'cat4.bmp'))
+    bmp1 = Image.open(os.path.join(picdir, 'security.bmp'))
+    bmp2 = Image.open(os.path.join(picdir, 'kona.bmp'))
+    bmp3 = Image.open(os.path.join(picdir, 'breakout.bmp'))
  
     draw.text((115, 8), 'Pika', font = font15, fill = 0)
  
     image.paste(bmp, (19, 27))
     image.paste(bmp1, (135, 27))
-    image.paste(bmp2, (19, 75))
-    image.paste(bmp3, (135, 75))
+    image.paste(bmp2, (19, 80))
+    image.paste(bmp3, (135, 80))
  
     rotated_image = image.rotate(180, expand=True)  # rotate
  
@@ -190,18 +189,10 @@ try:
     # final_image = final_image.rotate(180)
     final_image.paste(rotated_image)
     draw1 = ImageDraw.Draw(final_image)
- 
+    draw_current_field()
     epd.displayPartial(epd.getbuffer(final_image))
  
-    num = 0
-    while (True):
-        pause()
-        print("wait")
- 
-        time.sleep(0.5)
-        num = num + 1
-        if (num == 4):
-            break
+    pause()
  
     epd.sleep()
  

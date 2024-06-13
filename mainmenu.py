@@ -23,7 +23,7 @@ def obenlinks():
     draw1.rectangle([(115, 89), (19, 57)], outline=255, width=3)
     draw1.rectangle([(231, 40), (134, 8)], outline=255, width=3)
     draw1.rectangle([(115, 40), (19, 8)], outline=255, width=3)
-    time.sleep(0.5)
+
     epd.displayPartial(epd.getbuffer(final_image))
 
 
@@ -34,7 +34,7 @@ def obenrechts():
     draw1.rectangle([(115, 89), (19, 57)], outline=0, width=3)
     draw1.rectangle([(231, 40), (134, 8)], outline=255, width=3)
     draw1.rectangle([(115, 40), (19, 8)], outline=255, width=3)
-    time.sleep(0.5)
+
     epd.displayPartial(epd.getbuffer(final_image))
 
 
@@ -45,7 +45,6 @@ def untenlinks():
     draw1.rectangle([(115, 89), (19, 57)], outline=255, width=3)
     draw1.rectangle([(231, 40), (134, 8)], outline=0, width=3)
     draw1.rectangle([(115, 40), (19, 8)], outline=255, width=3)
-    time.sleep(0.5)
     epd.displayPartial(epd.getbuffer(final_image))
 
 
@@ -56,7 +55,6 @@ def untenrechts():
     draw1.rectangle([(115, 89), (19, 57)], outline=255, width=3)
     draw1.rectangle([(231, 40), (134, 8)], outline=255, width=3)
     draw1.rectangle([(115, 40), (19, 8)], outline=0, width=3)
-    time.sleep(0.5)
     epd.displayPartial(epd.getbuffer(final_image))
 
 
@@ -112,18 +110,11 @@ try:
     final_image.paste(rotated_image)
     draw1 = ImageDraw.Draw(final_image)
 
-    epd.displayPartial(epd.getbuffer(final_image))
-
-    num = 0
-    while (True):
-        pause()
-        print("wait")
-
-        time.sleep(0.5)
-        num = num + 1
-        if (num == 4):
-            break
-
+    # while (True):
+    #     draw1.rectangle((29, 100, 8, 20), fill = 255)
+    #     draw1.text((29, 100), time.strftime('%H:%M:%S'), font = font15, fill = 0)
+    #     epd.displayPartial(epd.getbuffer(final_image))
+    pause()
     epd.sleep()
 
 

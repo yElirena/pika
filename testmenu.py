@@ -162,7 +162,7 @@ try:
  
     draw = ImageDraw.Draw(image)
  
-    bmp = Image.open(os.path.join(picdir, 'cat1.bmp'))
+    bmp = Image.open(os.path.join(picdir, 'temp.bmp'))
     bmp1 = Image.open(os.path.join(picdir, 'checker.bmp'))
     bmp2 = Image.open(os.path.join(picdir, 'kona.bmp'))
     bmp3 = Image.open(os.path.join(picdir, 'breakout.bmp'))

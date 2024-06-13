@@ -52,7 +52,7 @@ def sb6():
     global tb
     f = 659.25
     tb.play(Tone.from_frequency(f))
-    sleep(0.2)
+    sleep(5.2)
     tb.stop()
 
 

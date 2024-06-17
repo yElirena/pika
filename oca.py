@@ -29,8 +29,8 @@ font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
 # images
 normal = Image.open(os.path.join(picdir, 'normal.bmp'))
 walk = Image.open(os.path.join(picdir, 'walk.bmp'))
-animation = [normal, walk]
-for img in animation:
+animationPictures = [normal, walk]
+for img in animationPictures:
     img = img.resize((48, 48), Image.ANTIALIAS)
 
 
@@ -111,16 +111,28 @@ class Kona:
             time.sleep(1)
 
 
-    def walk():
+    def walkRight():
         global draw, image
         num = random.randint(1, 9)
         print(num)
         kona.img = walk
         for i in range(num):
-            kona.x -= 10
-            updateScreen()
+            if kona.x-10 > 0:
+                kona.x -= 10
+                updateScreen()
         kona.img = normal
-        updateScreen()
+
+    
+    def walkleft():
+        global draw, image
+        num = random.randint(1, 9)
+        print(num)
+        kona.img = walk.transpose(Image.FLIP_LEFT_RIGHT)
+        for i in range(num):
+            if kona.x+10 < 250:
+                kona.x += 10
+                updateScreen()
+        kona.img = normal
 
 
     def eat():
@@ -129,6 +141,9 @@ class Kona:
 
 
 kona = Kona
+animations = [kona.walkRight, kona.walkleft, kona.eat]
+
+
 
 try:
     epd = epd2in13_V4.EPD()
@@ -143,15 +158,20 @@ try:
     updateScreen()
 
     # kona.hatch()
-    kona.food = 8
-    updateScreen()
-    time.sleep(1)
-    kona.eat()
-    updateScreen()
-    kona.food = 3
-    kona.walk()
-    time.sleep(1)
-    kona.walk()
+    # kona.food = 8
+    # updateScreen()
+    # time.sleep(1)
+    # kona.eat()
+    # updateScreen()
+    # kona.food = 3
+    # kona.walk()
+    # time.sleep(1)
+    # kona.walk()
+    while kona.alive:
+        random.choice(animations)()
+        time.sleep(1)
+        updateScreen()
+        
 
     #pause()
 

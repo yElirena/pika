@@ -51,17 +51,35 @@ def move():
 
 
 def menu():
-    print()
     global draw, image
     floor = Image.open(os.path.join(picdir, 'background.bmp'))
     image.paste(floor, (0, 0))
 
 
 def healthbar(num):
+    global image
     heart = Image.open(os.path.join(picdir, 'heart.bmp'))
-    x = 5
+    x = 10
     for i in range(num):
-        image.paste(heart, (num * x, 12))
+        image.paste(heart, (10 +(i * x), 12))
+
+def hatch():
+    global draw, image
+    egg1 = Image.open(os.path.join(picdir, 'egg1.bmp'))
+    egg2 = Image.open(os.path.join(picdir, 'egg2.bmp'))
+    egg3 = Image.open(os.path.join(picdir, 'egg3.bmp'))
+    egg4 = Image.open(os.path.join(picdir, 'egg4.bmp'))
+    egg5 = Image.open(os.path.join(picdir, 'egg5.bmp'))
+    egg6 = Image.open(os.path.join(picdir, 'egg6.bmp'))
+    eggs = [egg1, egg2, egg1, egg2, egg3, egg4, egg5, egg6]
+    for egg in eggs:
+        egg = egg.rotate(180)
+        egg = egg.resize((48, 48), Image.ANTIALIAS)
+        image.paste(egg, (100, 25))
+        epd.displayPartial(epd.getbuffer(image))
+        time.sleep(1)
+        
+
 
 
 try:
@@ -85,11 +103,12 @@ try:
     # kona = Image.open(os.path.join(picdir, 'heart.bmp'))
     # image.paste(kona, (4, 8))
 
-    image = image.transpose(Image.ROTATE_180)  # Rotate the image
+    image = image.transpose(Image.ROTATE_180)
     # epd.display_fast(epd.getbuffer(image))
     # epd.displayPartial(epd.getbuffer(image))
     epd.displayPartBaseImage(epd.getbuffer(image))
 
+    hatch()
 
     #pause()
 

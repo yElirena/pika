@@ -1,15 +1,15 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding:utf-8 -*-
 import sys
 import os
 from gpiozero import Button
 import logging
 from waveshare_epd import epd2in13_V4
-import time
 from PIL import Image, ImageDraw, ImageFont
 from signal import pause
- 
-#Klassen
+
+
+# Klassen
 class Field:
     def __init__(self, name, field_nr):
         self.x_0 = 0
@@ -18,32 +18,28 @@ class Field:
         self.y_1 = 0
         self.name = name
         self.field_nr = field_nr
-    
+
     def set_XY_0(self, x, y):
         self.x_0 = x
         self.y_0 = y
- 
+
     def set_XY_1(self, x, y):
         self.x_1 = x
         self.y_1 = y
- 
- 
- 
+
+
 class Menue:
     def __init__(self):
         self.field_array = [[]]
         self.current_field = Field("0", "0")
- 
- 
+
     def set_feldarray(self, field_array):
-        self.field_array = field_array
-        
- 
+        self.field_array = field_array       
+
     def set_current_field(self, current_field):
         self.current_field = current_field
- 
- 
- 
+
+
 feld_00 = Field("Thomas", "00")
 feld_00.set_XY_0(231, 89)
 feld_00.set_XY_1(134, 57)
@@ -81,19 +77,19 @@ def draw_current_field():
     field_unten_links = main_menue.field_array[1][0]
     field_unten_rechts = main_menue.field_array[1][1]
  
-    if(current_field.name == "Thomas"):
+    if (current_field.name == "Thomas"):
         draw1.rectangle([(field_oben_links.x_0, field_oben_links.y_0), (field_oben_links.x_1, field_oben_links.y_1)], outline=0, width=3)
         draw1.rectangle([(field_oben_rechts.x_0, field_oben_rechts.y_0), (field_oben_rechts.x_1, field_oben_rechts.y_1)], outline=255, width=3)
         draw1.rectangle([(field_unten_links.x_0, field_unten_links.y_0), (field_unten_links.x_1, field_unten_links.y_1)], outline=255, width=3)
         draw1.rectangle([(field_unten_rechts.x_0, field_unten_rechts.y_0), (field_unten_rechts.x_1, field_unten_rechts.y_1)], outline=255, width=3)
         epd.displayPartial(epd.getbuffer(final_image))
-    elif(current_field.name == "Marv"):
+    elif (current_field.name == "Marv"):
         draw1.rectangle([(field_oben_links.x_0, field_oben_links.y_0), (field_oben_links.x_1, field_oben_links.y_1)], outline=255, width=3)
         draw1.rectangle([(field_oben_rechts.x_0, field_oben_rechts.y_0), (field_oben_rechts.x_1, field_oben_rechts.y_1)], outline=0, width=3)
         draw1.rectangle([(field_unten_links.x_0, field_unten_links.y_0), (field_unten_links.x_1, field_unten_links.y_1)], outline=255, width=3)
         draw1.rectangle([(field_unten_rechts.x_0, field_unten_rechts.y_0), (field_unten_rechts.x_1, field_unten_rechts.y_1)], outline=255, width=3)
         epd.displayPartial(epd.getbuffer(final_image))
-    elif(current_field.name == "Roman"):
+    elif (current_field.name == "Roman"):
         draw1.rectangle([(field_oben_links.x_0, field_oben_links.y_0), (field_oben_links.x_1, field_oben_links.y_1)], outline=255, width=3)
         draw1.rectangle([(field_oben_rechts.x_0, field_oben_rechts.y_0), (field_oben_rechts.x_1, field_oben_rechts.y_1)], outline=255, width=3)
         draw1.rectangle([(field_unten_links.x_0, field_unten_links.y_0), (field_unten_links.x_1, field_unten_links.y_1)], outline=0, width=3)
@@ -109,31 +105,31 @@ def draw_current_field():
  
 def press_logic(num):
     if num == 0:
-        if(main_menue.current_field.name == "Marv"):
+        if (main_menue.current_field.name == "Marv"):
             main_menue.set_current_field(main_menue.field_array[0][0])
             draw_current_field()
-        elif(main_menue.current_field.name == "Marie"):
+        elif (main_menue.current_field.name == "Marie"):
             main_menue.set_current_field(main_menue.field_array[1][0])
             draw_current_field()
     elif num == 1:
-        if(main_menue.current_field.name == "Thomas"):
+        if (main_menue.current_field.name == "Thomas"):
             main_menue.set_current_field(main_menue.field_array[0][1])
             draw_current_field()
-        elif(main_menue.current_field.name == "Roman"):
+        elif (main_menue.current_field.name == "Roman"):
             main_menue.set_current_field(main_menue.field_array[1][1])
             draw_current_field()
     elif num == 2:
-        if(main_menue.current_field.name == "Roman"):
+        if (main_menue.current_field.name == "Roman"):
             main_menue.set_current_field(main_menue.field_array[0][0])
             draw_current_field()
-        elif(main_menue.current_field.name == "Marie"):
+        elif (main_menue.current_field.name == "Marie"):
             main_menue.set_current_field(main_menue.field_array[0][1])
             draw_current_field()
     elif num == 3:
-        if(main_menue.current_field.name == "Thomas"):
+        if (main_menue.current_field.name == "Thomas"):
             main_menue.set_current_field(main_menue.field_array[1][0])
             draw_current_field()
-        elif(main_menue.current_field.name == "Marv"):
+        elif (main_menue.current_field.name == "Marv"):
             main_menue.set_current_field(main_menue.field_array[1][1])
             draw_current_field()
  
@@ -150,7 +146,7 @@ btn_links.when_pressed = lambda: press_logic(0)
 btn_rechts.when_pressed = lambda: press_logic(1)
 btn_oben.when_pressed = lambda: press_logic(2)
 btn_unten.when_pressed = lambda: press_logic(3)
- 
+
 font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
  
 try:
@@ -167,12 +163,12 @@ try:
     bmp2 = Image.open(os.path.join(picdir, 'kona.bmp'))
     bmp3 = Image.open(os.path.join(picdir, 'breakout.bmp'))
  
-    draw.text((115, 8), 'Pika:', font = font15, fill = 0)
+    draw.text((115, 8), 'Pika:', font=font15, fill=0)
  
-    image.paste(bmp, (19, 30))
-    image.paste(bmp1, (135, 30))
-    image.paste(bmp2, (19, 80))
-    image.paste(bmp3, (135, 80))
+    image.paste(bmp, (19, 32))
+    image.paste(bmp1, (135, 32))
+    image.paste(bmp2, (19, 82))
+    image.paste(bmp3, (135, 82))
  
     rotated_image = image.rotate(180, expand=True)  # rotate
  

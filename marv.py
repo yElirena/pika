@@ -23,17 +23,22 @@ btn_b = gpiozero.Button(12)
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
 libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
 
+# setup font
 font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
 
+
+# display setup
 try:
     epd = epd2in13_V4.EPD()
     epd.init_fast()
     epd.Clear(0xFF)
-
+    #image setup
     image = Image.new('1', (epd.height, epd.width), 255)
-
     draw = ImageDraw.Draw(image)
+
+    # rotate screen
     image = image.transpose(Image.ROTATE_180)
+    # rotated_image = image.rotate(180, expand=True)  # rotate
 
 
     #draw.text((5, 5), 'rotated draw 5.5', font=font15, fill=0)
@@ -42,6 +47,7 @@ try:
     image.paste(load_bmp)
     image.show ()
     
+    # darw image to screen
     epd.displayPartBaseImage(epd.getbuffer(image))
     epd.sleep()
 

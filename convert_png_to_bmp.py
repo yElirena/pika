@@ -16,6 +16,6 @@ def convert_png_to_bmp(source_folder, dest_folder):
 
 
 source_folder = "/home/fuse/cloud/CBM/Java/Java_3Pojeckt/"
-dest_folder = "/home/fuse/NAS/converted/"
+dest_folder = "/home/fuse/NAS/pic/"
 
 convert_png_to_bmp(source_folder, dest_folder)

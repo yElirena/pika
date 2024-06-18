@@ -87,7 +87,7 @@ try:
     bmp2 = Image.open(os.path.join(picdir, 'cat3.bmp'))
     bmp3 = Image.open(os.path.join(picdir, 'cat4.bmp'))
 
-    draw.text((115, 8), 'Pika', font = font15, fill = 0)
+    draw.text((115, 8), 'Pika', font=font15, fill=0)
 
     image.paste(bmp, (19, 27))
     image.paste(bmp1, (135, 27))

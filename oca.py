@@ -26,22 +26,33 @@ libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
 
 font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
 
-# images
-normal = Image.open(os.path.join(picdir, 'normal.bmp'))
-walk = Image.open(os.path.join(picdir, 'walk.bmp'))
-bored1 = Image.open(os.path.join(picdir, 'bored1.bmp'))
-bored2 = Image.open(os.path.join(picdir, 'bored2.bmp'))
-sleep1 = Image.open(os.path.join(picdir, 'sleep1.bmp'))
-sleep2 = Image.open(os.path.join(picdir, 'sleep2.bmp'))
-sleep3 = Image.open(os.path.join(picdir, 'sleep3.bmp'))
-eat = Image.open(os.path.join(picdir, 'eat.bmp'))
-happy1 = Image.open(os.path.join(picdir, 'happy1.bmp'))
-happy2 = Image.open(os.path.join(picdir, 'happy2.bmp'))
+# images age 1
+normal = Image.open(os.path.join(picdir, 'ynormal.bmp'))
+walk = Image.open(os.path.join(picdir, 'ywalk.bmp'))
+bored1 = Image.open(os.path.join(picdir, 'ybored1.bmp'))
+bored2 = Image.open(os.path.join(picdir, 'ybored2.bmp'))
+sleep1 = Image.open(os.path.join(picdir, 'ysleep1.bmp'))
+sleep2 = Image.open(os.path.join(picdir, 'ysleep2.bmp'))
+sleep3 = Image.open(os.path.join(picdir, 'ysleep3.bmp'))
+eat = Image.open(os.path.join(picdir, 'yeat.bmp'))
+happy1 = Image.open(os.path.join(picdir, 'yhappy1.bmp'))
+happy2 = Image.open(os.path.join(picdir, 'yhappy2.bmp'))
 happy3 = Image.open(os.path.join(picdir, 'happy3.bmp'))
+# images age 0
+# ynormal = Image.open(os.path.join(picdir, 'ynormal.bmp'))
+# ywalk = Image.open(os.path.join(picdir, 'ywalk.bmp'))
+# ybored1 = Image.open(os.path.join(picdir, 'ybored1.bmp'))
+# ybored2 = Image.open(os.path.join(picdir, 'ybored2.bmp'))
+# ysleep1 = Image.open(os.path.join(picdir, 'ysleep1.bmp'))
+# ysleep2 = Image.open(os.path.join(picdir, 'ysleep2.bmp'))
+# ysleep3 = Image.open(os.path.join(picdir, 'ysleep3.bmp'))
+# yeat = Image.open(os.path.join(picdir, 'yeat.bmp'))
+# yhappy1 = Image.open(os.path.join(picdir, 'yhappy1.bmp'))
+# yhappy2 = Image.open(os.path.join(picdir, 'yhappy2.bmp'))
 
-animationPictures = [normal, walk]
-for img in animationPictures:
-    img = img.resize((48, 48), Image.ANTIALIAS)
+# animationPictures = [normal, walk]
+# for img in animationPictures:
+#     img = img.resize((48, 48), Image.ANTIALIAS)
 
 
 def loadscreen():
@@ -93,7 +104,7 @@ class Kona:
     exhausted = 0
     alive = True
     x = 100
-    y = 35
+    y = 45
     img = normal
 
     def hatch():
@@ -109,8 +120,8 @@ class Kona:
         for egg in eggs:
             c += 1
             egg = egg.rotate(180)
-            egg = egg.resize((48, 48), Image.ANTIALIAS)
-            image.paste(egg, (kona.x, kona.y))
+            egg = egg.resize((64, 64), Image.ANTIALIAS)
+            image.paste(egg, (kona.x, kona.y-20))
             tb.play(gpiozero.tones.Tone.from_frequency(440))
             if c == len(eggs):
                 time.sleep(0.5)
@@ -158,8 +169,16 @@ class Kona:
         kona.img = happy1
         updateScreen()
         kona.img = happy2
+        if kona.age > 1:
+            updateScreen()
+            kona.img = happy3
+
+    def bored():
+        kona.img = bored1
         updateScreen()
-        kona.img = happy3
+        kona.img = bored2
+        updateScreen()
+        kona.img = normal
 
     def sleep():
         global image, sleep
@@ -172,9 +191,34 @@ class Kona:
             updateScreen()
             kona.exhausted -= 1
 
+    def evolve():
+        global normal, walk, bored1, bored2, sleep1, sleep2, sleep3, eat, happy1, happy2, happy3
+        kona.y = 35
+        # ynormal = Image.open(os.path.join(picdir, 'ynormal.bmp'))
+        # ywalk = Image.open(os.path.join(picdir, 'ywalk.bmp'))
+        # ybored1 = Image.open(os.path.join(picdir, 'ybored1.bmp'))
+        # ybored2 = Image.open(os.path.join(picdir, 'ybored2.bmp'))
+        # ysleep1 = Image.open(os.path.join(picdir, 'ysleep1.bmp'))
+        # ysleep2 = Image.open(os.path.join(picdir, 'ysleep2.bmp'))
+        # ysleep3 = Image.open(os.path.join(picdir, 'ysleep3.bmp'))
+        # yeat = Image.open(os.path.join(picdir, 'yeat.bmp'))
+        # yhappy1 = Image.open(os.path.join(picdir, 'yhappy1.bmp'))
+        # yhappy2 = Image.open(os.path.join(picdir, 'yhappy2.bmp'))
+        normal = Image.open(os.path.join(picdir, 'normal.bmp'))
+        walk = Image.open(os.path.join(picdir, 'walk.bmp'))
+        bored1 = Image.open(os.path.join(picdir, 'bored1.bmp'))
+        bored2 = Image.open(os.path.join(picdir, 'bored2.bmp'))
+        sleep1 = Image.open(os.path.join(picdir, 'sleep1.bmp'))
+        sleep2 = Image.open(os.path.join(picdir, 'sleep2.bmp'))
+        sleep3 = Image.open(os.path.join(picdir, 'sleep3.bmp'))
+        eat = Image.open(os.path.join(picdir, 'eat.bmp'))
+        happy1 = Image.open(os.path.join(picdir, 'happy1.bmp'))
+        happy2 = Image.open(os.path.join(picdir, 'happy2.bmp'))
+        happy3 = Image.open(os.path.join(picdir, 'happy3.bmp'))
+
 
 kona = Kona
-animations = [kona.walkRight, kona.walkleft, kona.eat, kona.happy]
+animations = [kona.walkRight, kona.walkleft, kona.eat, kona.happy, kona.bored]
 # animations = [kona.sleep]
 
 
@@ -200,8 +244,12 @@ try:
     # kona.walk()
     # time.sleep(1)
     # kona.walk()
+    count = 0
     while kona.alive:
-        if kona.exhausted >= 20:
+        count += 1
+        if count > 20:
+            kona.evolve()
+        if kona.exhausted >= 30:
             kona.sleep()
         random.choice(animations)()
         time.sleep(random.randint(1,2))

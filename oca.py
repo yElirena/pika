@@ -26,7 +26,17 @@ libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
 
 font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
 
+
+# setup variables
+courser = 0
+poopPosX = 0
+poopPosY = 0
+poopSwitch = 0
+
+
 # images age 1
+poop1 = Image.open(os.path.join(picdir, 'poop1.bmp'))
+poop2 = Image.open(os.path.join(picdir, 'poop2.bmp'))
 normal = Image.open(os.path.join(picdir, 'ynormal.bmp'))
 walk = Image.open(os.path.join(picdir, 'ywalk.bmp'))
 bored1 = Image.open(os.path.join(picdir, 'ybored1.bmp'))
@@ -86,6 +96,16 @@ def healthbar():
         image.paste(heart, (10+(i*x), 12))
 
 
+def drawpoop():
+    global image, poopPosX, poopPosY, poopSwitch
+    poopSwitch += 1
+    if kona.haspooped:
+        if poopSwitch %2 == 0:
+            image.paste(poop1, (poopPosX, poopPosY))
+        else:
+            image.paste(poop2, (poopPosX, poopPosY))
+
+
 def updateScreen():
     global image, draw
     imagesetup()
@@ -94,13 +114,14 @@ def updateScreen():
     healthbar()
     # draw.rectangle([(kona.x, kona.x), (kona.x+48, kona.x+48)], fill=255)
     image.paste(kona.img, (kona.x, kona.y))
+    drawpoop()
     image = image.transpose(Image.ROTATE_180)
     epd.displayPartial(epd.getbuffer(image))
 
 
 def printsStats():
     print(f'{kona.age}  age')
-    # print(kona.bored + " bored")
+    print(kona.boredness + " bored")
     print(f'{kona.food} food')
     print(f'{kona.exhausted} exhausted')
 
@@ -124,6 +145,7 @@ def menu():
     draw.text((180, 6), 'clean', font=font15, fill=0)
 
 
+# selectable menu function
 def courserleft():
     global courser
     if courser-1 >= 0:
@@ -142,10 +164,14 @@ def courserright():
 
 def select():
     global courser
-    print()
+    if courser == 2:
+        cleanPoop()
 
 
-courser = 0
+def cleanPoop():
+    kona.haspooped = False
+
+
 btn_a.when_pressed = select
 btn_links.when_pressed = courserleft
 btn_rechts.when_pressed = courserright
@@ -160,6 +186,7 @@ class Kona:
     x = 100
     y = 45
     img = normal
+    haspooped = False
 
 
     def hatch():
@@ -278,6 +305,13 @@ class Kona:
         happy3 = Image.open(os.path.join(picdir, 'happy3.bmp'))
 
 
+    def poop():
+        global poopPosX, poopPosY
+        kona.haspooped = True
+        poopPosX = kona.x - 20
+        poopPosY = kona.y + 32
+
+
 kona = Kona
 animations = [kona.walkRight, kona.walkleft, kona.eat, kona.happy, kona.bored]
 # animations = [kona.sleep]
@@ -307,12 +341,15 @@ try:
     # kona.walk()
     count = 0
     while kona.alive:
-        printsStats()
+        # printsStats()
         count += 1
-        if count > 20:
+        if count > 10:
             kona.evolve()
         if kona.exhausted >= 30:
             kona.sleep()
+        if count %5 == 0:
+            if kona.haspooped == False:
+                kona.poop()
         random.choice(animations)()
         time.sleep(random.randint(1,2))
         updateScreen()

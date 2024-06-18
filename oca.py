@@ -71,7 +71,7 @@ def imagesetup():
     draw = ImageDraw.Draw(image)
 
 
-def menu():
+def background():
     global draw, image
     background = Image.open(os.path.join(picdir, 'background.bmp'))
     image.paste(background, (0, 0))
@@ -89,6 +89,7 @@ def healthbar():
 def updateScreen():
     global image, draw
     imagesetup()
+    background()
     menu()
     healthbar()
     # draw.rectangle([(kona.x, kona.x), (kona.x+48, kona.x+48)], fill=255)
@@ -97,15 +98,69 @@ def updateScreen():
     epd.displayPartial(epd.getbuffer(image))
 
 
+def printsStats():
+    print(f'{kona.age}  age')
+    # print(kona.bored + " bored")
+    print(f'{kona.food} food')
+    print(f'{kona.exhausted} exhausted')
+
+
+def menu():
+    global draw, courser
+    x = 0
+    y = 0
+    if courser == 0:
+        x = 98
+        y = x+31
+    elif courser == 1:
+        x = 138
+        y = x+35
+    elif courser == 2:
+        x = 178
+        y = x+38
+    draw.rectangle((x, 4, y, 27), outline=0, width=2)
+    draw.text((100, 6), 'quiz', font=font15, fill=0)
+    draw.text((140, 6), 'Meal', font=font15, fill=0)
+    draw.text((180, 6), 'clean', font=font15, fill=0)
+
+
+def courserleft():
+    global courser
+    if courser-1 >= 0:
+        courser -= 1
+    else:
+        courser = 2
+
+
+def courserright():
+    global courser
+    if courser+1 <= 2:
+        courser += 1
+    else:
+        courser = 0
+
+
+def select():
+    global courser
+    print()
+
+
+courser = 0
+btn_a.when_pressed = select
+btn_links.when_pressed = courserleft
+btn_rechts.when_pressed = courserright
+
+
 class Kona:
     age = 0
-    bored = 0
+    boredness = 0
     food = 5
     exhausted = 0
     alive = True
     x = 100
     y = 45
     img = normal
+
 
     def hatch():
         global draw, image
@@ -135,32 +190,34 @@ class Kona:
     def walkRight():
         global draw, image
         num = random.randint(1, 9)
-        print(num)
         kona.img = walk
         for i in range(num):
             kona.exhausted += 1
             if kona.x-10 > 0:
                 kona.x -= 10
                 updateScreen()
+            else:
+                break
         kona.img = normal
 
     
     def walkleft():
         global draw, image
         num = random.randint(1, 9)
-        print(num)
         kona.img = walk.transpose(Image.FLIP_LEFT_RIGHT)
         for i in range(num):
             kona.exhausted += 1
-            if kona.x+10 < 198:
+            if kona.x+10 < 190:
                 kona.x += 10
                 updateScreen()
+            else:
+                break
         kona.img = normal
 
 
     def eat():
         kona.img = eat
-        kona.food = kona.food + 1
+        # kona.food = kona.food + 1
         updateScreen()
         kona.img = normal
 
@@ -173,6 +230,7 @@ class Kona:
             updateScreen()
             kona.img = happy3
 
+
     def bored():
         kona.img = bored1
         updateScreen()
@@ -180,16 +238,19 @@ class Kona:
         updateScreen()
         kona.img = normal
 
+
     def sleep():
         global image, sleep
-        for i in range(10, 10 + random.randint(1, 9)):
+        for i in range(1, 25):
             kona.img = sleep1
             updateScreen()
             kona.img = sleep2
             updateScreen()
             kona.img = sleep3
             updateScreen()
-            kona.exhausted -= 1
+        kona.exhausted = 0
+        kona.img = normal
+
 
     def evolve():
         global normal, walk, bored1, bored2, sleep1, sleep2, sleep3, eat, happy1, happy2, happy3
@@ -234,7 +295,7 @@ try:
     
     updateScreen()
 
-    kona.hatch()
+    # kona.hatch()
     # kona.food = 8
     # updateScreen()
     # time.sleep(1)
@@ -246,6 +307,7 @@ try:
     # kona.walk()
     count = 0
     while kona.alive:
+        printsStats()
         count += 1
         if count > 20:
             kona.evolve()

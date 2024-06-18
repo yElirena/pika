@@ -3,51 +3,54 @@ from PIL import Image, ImageDraw
 import logging
 import time
 from waveshare_epd import epd2in13_V4
+from signal import pause
+
+logging.basicConfig(level=logging.DEBUG)
 
 class Paddle:
-    
 
     def __init__(self):
-        pass
+        self.btn_links = Button(19)
+        self.btn_rechts = Button(20)
+        self.btn_a = Button(6)
+        self.btn_b = Button(12)
+        self.x_0 = 112
+        self.x_1 = 140
+        self.y_0 = 4
+        self.y_1 = 8
 
+        self.btn_links.when_pressed = self.moveLeft
+        self.btn_rechts.when_pressed = self.moveRight
+        self.btn_b.when_pressed = self.goBack
 
     def moveLeft(self):
-        global btn_links
-        if btn_links.is_pressed:
+        if self.btn_links.is_pressed:
             print("Left button is being pressed")
         else:
             print("Button was pushed once.")
 
-
-        pass
-
     def moveRight(self):
         pass
 
-
     def goBack(self):
         pass
-    
 
-    btn_links = Button(19)
-    btn_rechts = Button(20)
-    btn_a = Button(6)
-    btn_b = Button(12)
+try:
+    logging.info("Start of EPD init")
+    epd = epd2in13_V4.EPD()
+    epd.init()
+    logging.info("EPD init successfull")
+    epd.Clear(0xFF)
+    paddle = Image.new('1', (epd.height, epd.width), 1)
 
-    btn_links.when_pressed = moveLeft
-    btn_rechts.when_pressed = moveRight
-    btn_b.when_pressed = goBack
-    
-    try:
-        epd = epd2in13_V4
-        epd.init()
-        epd.Clear(0xFF)
-        paddle = Image.new('1', (epd.height, epd.width), 0)
+    drawPaddle = ImageDraw.Draw(paddle)
+    drawPaddle.rectangle([(112, 4), (140, 8)], fill=0, width=1)
+    epd.displayPartBaseImage(epd.getbuffer(paddle))
+    pause()
+    logging.info("Display updated")
 
-        drawPaddle = ImageDraw.Draw(paddle)
-        drawPaddle.rounded_rectangle([(112, 4), (122, 8)], radius= 1, fill = 0, width = 1)
-        epd.displayPartial(epd.getbuffer(paddle))
-        time.sleep(0.5)
-    
-    except IOError as e:
-        logging.info(e)
+except IOError as e:
+    logging.error("IOError: %s", e)
+except Exception as ex:
+    logging.error("Unexpected error: %s", ex)
+

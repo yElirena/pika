@@ -1,2 +1,2 @@
-class ball:
+class Ball:
     pass

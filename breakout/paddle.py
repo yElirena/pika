@@ -1,11 +1,11 @@
 from gpiozero import Button
 from PIL import Image, ImageDraw
-from waveshare_epd import epd2in13_V4
 import logging
 import time
+from waveshare_epd import epd2in13_V4
 
-class paddle:
-    game_paused = True
+class Paddle:
+    
 
     def __init__(self):
         pass
@@ -24,14 +24,6 @@ class paddle:
     def moveRight(self):
         pass
 
-    def startPause(self):
-        global game_paused, epd
-        if game_paused:
-            epd.sleep()
-            game_paused = False
-        else:
-            game_paused = True
-
 
     def goBack(self):
         pass
@@ -44,7 +36,6 @@ class paddle:
 
     btn_links.when_pressed = moveLeft
     btn_rechts.when_pressed = moveRight
-    btn_a.when_pressed = startPause
     btn_b.when_pressed = goBack
     
     try:

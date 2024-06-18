@@ -1,2 +1,2 @@
-class bricks:
+class Bricks:
     pass

@@ -29,6 +29,14 @@ font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
 # images
 normal = Image.open(os.path.join(picdir, 'normal.bmp'))
 walk = Image.open(os.path.join(picdir, 'walk.bmp'))
+bored1 = Image.open(os.path.join(picdir, 'bored1.bmp'))
+bored2 = Image.open(os.path.join(picdir, 'bored2.bmp'))
+sleep = Image.open(os.path.join(picdir, 'sleep.bmp'))
+eat = Image.open(os.path.join(picdir, 'eat.bmp'))
+happy1 = Image.open(os.path.join(picdir, 'happy1.bmp'))
+happy2 = Image.open(os.path.join(picdir, 'happy2.bmp'))
+happy3 = Image.open(os.path.join(picdir, 'happy3.bmp'))
+
 animationPictures = [normal, walk]
 for img in animationPictures:
     img = img.resize((48, 48), Image.ANTIALIAS)
@@ -83,7 +91,7 @@ class Kona:
     exhausted = 0
     alive = True
     x = 100
-    y = 40
+    y = 35
     img = normal
 
     def hatch():
@@ -129,20 +137,38 @@ class Kona:
         print(num)
         kona.img = walk.transpose(Image.FLIP_LEFT_RIGHT)
         for i in range(num):
-            if kona.x+10 < 250:
+            if kona.x+10 < 198:
                 kona.x += 10
                 updateScreen()
         kona.img = normal
 
 
     def eat():
+        kona.img = eat
         kona.food = kona.food + 1
+        updateScreen()
+        kona.img = normal
 
+    
+    def happy():
+        kona.img = happy1
+        updateScreen()
+        kona.img = happy2
+        updateScreen()
+        kona.img = happy3
+
+    def sleep():
+        global image, sleep
+        kona.img = sleep
+        sleep = sleep.rotate(180)
+        image.paste(sleep, (kona.x+48, kona.y))
+        epd.displayPartial(epd.getbuffer(image))
+        time.sleep(4)
 
 
 kona = Kona
-animations = [kona.walkRight, kona.walkleft, kona.eat]
-
+# animations = [kona.walkRight, kona.walkleft, kona.eat, kona.happy, kona.sleep]
+animations = [kona.sleep]
 
 
 try:

@@ -31,7 +31,9 @@ normal = Image.open(os.path.join(picdir, 'normal.bmp'))
 walk = Image.open(os.path.join(picdir, 'walk.bmp'))
 bored1 = Image.open(os.path.join(picdir, 'bored1.bmp'))
 bored2 = Image.open(os.path.join(picdir, 'bored2.bmp'))
-sleep = Image.open(os.path.join(picdir, 'sleep.bmp'))
+sleep1 = Image.open(os.path.join(picdir, 'sleep1.bmp'))
+sleep2 = Image.open(os.path.join(picdir, 'sleep2.bmp'))
+sleep3 = Image.open(os.path.join(picdir, 'sleep3.bmp'))
 eat = Image.open(os.path.join(picdir, 'eat.bmp'))
 happy1 = Image.open(os.path.join(picdir, 'happy1.bmp'))
 happy2 = Image.open(os.path.join(picdir, 'happy2.bmp'))
@@ -125,6 +127,7 @@ class Kona:
         print(num)
         kona.img = walk
         for i in range(num):
+            kona.exhausted += 1
             if kona.x-10 > 0:
                 kona.x -= 10
                 updateScreen()
@@ -137,6 +140,7 @@ class Kona:
         print(num)
         kona.img = walk.transpose(Image.FLIP_LEFT_RIGHT)
         for i in range(num):
+            kona.exhausted += 1
             if kona.x+10 < 198:
                 kona.x += 10
                 updateScreen()
@@ -159,16 +163,19 @@ class Kona:
 
     def sleep():
         global image, sleep
-        kona.img = sleep
-        sleep = sleep.rotate(180)
-        image.paste(sleep, (kona.x+48, kona.y))
-        epd.displayPartial(epd.getbuffer(image))
-        time.sleep(4)
+        for i in range(10, 10 + random.randint(1, 9)):
+            kona.img = sleep1
+            updateScreen()
+            kona.img = sleep2
+            updateScreen()
+            kona.img = sleep3
+            updateScreen()
+            kona.exhausted -= 1
 
 
 kona = Kona
-# animations = [kona.walkRight, kona.walkleft, kona.eat, kona.happy, kona.sleep]
-animations = [kona.sleep]
+animations = [kona.walkRight, kona.walkleft, kona.eat, kona.happy]
+# animations = [kona.sleep]
 
 
 try:
@@ -183,7 +190,7 @@ try:
     
     updateScreen()
 
-    # kona.hatch()
+    kona.hatch()
     # kona.food = 8
     # updateScreen()
     # time.sleep(1)
@@ -194,8 +201,10 @@ try:
     # time.sleep(1)
     # kona.walk()
     while kona.alive:
+        if kona.exhausted >= 20:
+            kona.sleep()
         random.choice(animations)()
-        time.sleep(1)
+        time.sleep(random.randint(1,2))
         updateScreen()
         
 

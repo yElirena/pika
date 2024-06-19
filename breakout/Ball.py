@@ -1,5 +1,6 @@
 from PIL import Image, ImageDraw
 from waveshare_epd import epd2in13_V4
+import logging
 
 movement = 10
 
@@ -23,18 +24,19 @@ class Ball:
                     (self.size[1][0] + self.moveX, self.size[1][1] + self.moveY)]
         self.size = newSize
         self.initiateBall(draw)
+        logging.info(f"Ball coordinates: Top-Left ({self.size[0][0]}, {self.size[0][1]}), Bottom-Right ({self.size[1][0]}, {self.size[1][1]})")
     
     def checkCollisionWithWalls(self):
         #hopefully detects collision left and right walls
-        if self.size[0][0] < -self.epd.width or self.size[0][0] > self.epd.width:
+        if self.size[0][0] < 0 or self.size[1][0] > self.epd.width:
             self.moveX *= -1
             return
         #hopefully detects collision upper wall
-        if self.size[0][1] > self.epd.height:
+        if self.size[0][1] < 0:
             self.moveY *= -1
             return
         #hopefully detects collosion with bottom wall
-        if self.size[0][1] < -self.epd.height:
+        if self.size[1][1] > self.epd.height:
             self.reset()
             return
     

@@ -7,7 +7,7 @@ from signal import pause
 from paddle import Paddle
 from Ball import Ball
 
-#logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 class GameWindow:
     def __init__(self):

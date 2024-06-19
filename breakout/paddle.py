@@ -30,13 +30,6 @@ class Paddle:
     def initiatePaddle(self, draw):
         draw.rectangle([(self.x_0, self.y_0), (self.x_1, self.y_1)], fill=0, width=1)
 
-    """ def updateDisplay(self):
-        self.epd.Clear(0xFF)
-        self.paddle = Image.new('1', (self.epd.height, self.epd.width), 1)
-        self.drawPaddle = ImageDraw.Draw(self.paddle)
-        self.drawPaddle.rectangle([(self.x_0, self.y_0), (self.x_1, self.y_1)], fill=0, width=1)
-        self.epd.displayPartial(self.epd.getbuffer(self.paddle)) """
-
     def moveLeft(self):
         if self.x_1 < 198:
             self.x_0 = self.x_0 + 10

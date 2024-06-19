@@ -22,13 +22,13 @@ class GameWindow:
             self.ball = Ball(self.epd)
 
             self.running = True
-            self.updateDisplay1()
+            self.updateDisplay()
         except IOError as e:
             logging.error("IOError: %s", e)
         except Exception as ex:
             logging.error("Unexpected error: %s", ex)
     
-    def updateDisplay1(self):
+    def updateDisplay(self):
         try:
             while self.running:
                 image = Image.new('1', (self.epd.height, self.epd.width), 1)
@@ -37,7 +37,7 @@ class GameWindow:
                 self.paddle.initiatePaddle(draw)
                 self.ball.initiateBall(draw)
 
-                self.epd.displayPartBaseImage(self.epd.getbuffer(image))
+                self.epd.displayPartial(self.epd.getbuffer(image))
                 logging.info("Display updated")
                 
                 time.sleep(0.5)

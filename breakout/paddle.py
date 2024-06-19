@@ -1,12 +1,6 @@
 from gpiozero import Button
 from PIL import Image, ImageDraw
-import logging
-import time
 from waveshare_epd import epd2in13_V4
-from signal import pause
-
-logging.basicConfig(level=logging.DEBUG)
-
 
 class Paddle:
 
@@ -34,13 +28,11 @@ class Paddle:
         if self.x_1 < 198:
             self.x_0 = self.x_0 + 10
             self.x_1 = self.x_1 + 10
-            #self.updateDisplay()
 
     def moveRight(self):
         if self.x_0 > 0:
             self.x_0 = self.x_0 - 10
             self.x_1 = self.x_1 - 10
-            #self.updateDisplay()
 
     def goBack(self):
         pass

@@ -147,6 +147,9 @@ def printsStats():
     print(f'{kona.boredness} bored')
     print(f'{kona.food} food')
     print(f'{kona.exhausted} exhausted')
+    print(f'{kona.happyness} happyness')
+    print(' '.join(map(str, animations)))
+    print(' '.join(map(str, cachedAnimations)))
 
 
 def menuOnOff():
@@ -190,6 +193,7 @@ def select():
 # interact functions
 def clean():
     kona.haspooped = False
+    cachedAnimations.append(kona.happy)
 
 
 def meal():
@@ -202,6 +206,7 @@ def meal():
 def quiz():
     global mealLeft
     mealLeft += 1
+    kona.happyness += 10
 
 
 btn_a.when_pressed = select
@@ -213,14 +218,17 @@ btn_rechts.when_pressed = courserright
 
 class Kona:
     age = 0
+    happyness = 50
     boredness = 0
     food = 5
     exhausted = 0
+    haspooped = False
+    haseaten = False
     alive = True
+    evolved = False
     x = 100
     y = 45
     img = normal
-    haspooped = False
 
     def hatch():
         global draw, image
@@ -274,55 +282,64 @@ class Kona:
 
     def eat():
         global foodOnScreen
-        while foodOnScreen > 0:
-            kona.img = eat
-            kona.food = kona.food + 1
-            updateScreen()
-            kona.img = normal
-            foodOnScreen -= 1
-            updateScreen()
+        if foodOnScreen:
+            while foodOnScreen > 0:
+                kona.img = eat
+                kona.food = kona.food + 1
+                updateScreen()
+                kona.img = normal
+                foodOnScreen -= 1
+                updateScreen()
+            kona.happyness += 10
+            kona.haseaten = True
 
     def happy():
         kona.img = happy1
         updateScreen()
         kona.img = happy2
-        if kona.age > 1:
-            updateScreen()
+        updateScreen()
+        if kona.evolved:
             kona.img = happy3
+            updateScreen()
+        kona.img = normal
 
     def bored():
-        kona.img = bored1
-        updateScreen()
-        kona.img = bored2
-        updateScreen()
-        kona.img = normal
+        if kona.boredness > 90:
+            kona.img = bored1
+            updateScreen()
+            kona.img = bored2
+            updateScreen()
+            kona.img = normal
 
     def sleep():
         global image, sleep
-        for i in range(1, 25):
-            kona.img = sleep1
-            updateScreen()
-            kona.img = sleep2
-            updateScreen()
-            kona.img = sleep3
-            updateScreen()
-        kona.exhausted = 0
-        kona.img = normal
+        if kona.exhausted >= 35:
+            for i in range(1, 20):
+                kona.img = sleep1
+                updateScreen()
+                kona.img = sleep2
+                updateScreen()
+                kona.img = sleep3
+                updateScreen()
+            kona.exhausted = 0
+            kona.img = normal
 
     def evolve():
         global normal, walk, bored1, bored2, sleep1, sleep2, sleep3, eat, happy1, happy2, happy3
-        kona.y = 35
-        normal = Image.open(os.path.join(picdir, 'normal.bmp'))
-        walk = Image.open(os.path.join(picdir, 'walk.bmp'))
-        bored1 = Image.open(os.path.join(picdir, 'bored1.bmp'))
-        bored2 = Image.open(os.path.join(picdir, 'bored2.bmp'))
-        sleep1 = Image.open(os.path.join(picdir, 'sleep1.bmp'))
-        sleep2 = Image.open(os.path.join(picdir, 'sleep2.bmp'))
-        sleep3 = Image.open(os.path.join(picdir, 'sleep3.bmp'))
-        eat = Image.open(os.path.join(picdir, 'eat.bmp'))
-        happy1 = Image.open(os.path.join(picdir, 'happy1.bmp'))
-        happy2 = Image.open(os.path.join(picdir, 'happy2.bmp'))
-        happy3 = Image.open(os.path.join(picdir, 'happy3.bmp'))
+        if not kona.evolved and kona.age > 20 and kona.happyness > 80:
+            kona.y = 35
+            normal = Image.open(os.path.join(picdir, 'normal.bmp'))
+            walk = Image.open(os.path.join(picdir, 'walk.bmp'))
+            bored1 = Image.open(os.path.join(picdir, 'bored1.bmp'))
+            bored2 = Image.open(os.path.join(picdir, 'bored2.bmp'))
+            sleep1 = Image.open(os.path.join(picdir, 'sleep1.bmp'))
+            sleep2 = Image.open(os.path.join(picdir, 'sleep2.bmp'))
+            sleep3 = Image.open(os.path.join(picdir, 'sleep3.bmp'))
+            eat = Image.open(os.path.join(picdir, 'eat.bmp'))
+            happy1 = Image.open(os.path.join(picdir, 'happy1.bmp'))
+            happy2 = Image.open(os.path.join(picdir, 'happy2.bmp'))
+            happy3 = Image.open(os.path.join(picdir, 'happy3.bmp'))
+            kona.evolved = True
 
     def poop():
         global poopPosX, poopPosY
@@ -332,8 +349,8 @@ class Kona:
 
 
 kona = Kona
-animations = [kona.walkRight, kona.walkleft, kona.happy, kona.bored, kona.eat]
-# animations = [kona.sleep]
+animations = [kona.walkRight, kona.walkleft, kona.bored, kona.eat, kona.evolve, kona.sleep]
+cachedAnimations = []
 
 
 try:
@@ -350,20 +367,26 @@ try:
 
     # kona.hatch()
 
-    count = 0
     while kona.alive:
         printsStats()
-        count += 1
-        if count > 10:
-            kona.evolve()
-        if kona.exhausted >= 35:
-            kona.sleep()
-        if count % 20 == 0:
-            if not kona.haspooped:
-                kona.poop()
+        if kona.haseaten and kona.poop not in animations:
+            animations.append(kona.poop)
+        elif not kona.haseaten and kona.poop in animations:
+            animations.remove(kona.poop)
+        if kona.haspooped and kona.happyness - 1 >= 0:
+            kona.happyness -= 1
+        if len(cachedAnimations) >= 1:
+            for i in cachedAnimations:
+                i()
+            cachedAnimations = []
+        if kona.happyness >= 80 and kona.happy not in animations:
+            animations.append(kona.happy)
+        elif kona.happy in animations and kona.happyness < 80:
+            animations.remove(kona.happy)
         random.choice(animations)()
         time.sleep(random.randint(1, 2))
         updateScreen()
+        kona.age += 1
 
     epd.sleep()
 

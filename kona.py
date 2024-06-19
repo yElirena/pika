@@ -209,8 +209,9 @@ def clean():
 
 def meal():
     global foodOnScreen, mealLeft
-    foodOnScreen = 3
-    mealLeft -= 1
+    if mealLeft > 0:
+        foodOnScreen = 3
+        mealLeft -= 1
 
 
 def quiz():

@@ -23,7 +23,8 @@ tb = gpiozero.TonalBuzzer(5)
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
 libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
 
-font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
+font25 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 25)
+font10 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 10)
 
 
 # setup variables
@@ -32,9 +33,14 @@ poopPosX = 0
 poopPosY = 0
 poopSwitch = 0
 menuSwitch = False
+foodOnScreen = 0
+mealLeft = 0
 
 
 # images age 1
+bread1 = Image.open(os.path.join(picdir, 'bread1.bmp'))
+bread2 = Image.open(os.path.join(picdir, 'bread2.bmp'))
+bread3 = Image.open(os.path.join(picdir, 'bread3.bmp'))
 poop1 = Image.open(os.path.join(picdir, 'poop1.bmp'))
 poop2 = Image.open(os.path.join(picdir, 'poop2.bmp'))
 normal = Image.open(os.path.join(picdir, 'ynormal.bmp'))
@@ -106,14 +112,24 @@ def drawpoop():
             image.paste(poop2, (poopPosX, poopPosY))
 
 
+def drawFood():
+    global image, foodOnScreen
+    if foodOnScreen == 3:
+        image.paste(bread1, (110, 76))
+    elif foodOnScreen == 2:
+        image.paste(bread2, (110, 76))
+    elif foodOnScreen == 1:
+        image.paste(bread3, (110, 76))
+
+
 def updateScreen():
     global image, draw
     imagesetup()
     background()
-    menu()
     healthbar()
-    image.paste(kona.img, (kona.x, kona.y))
     drawpoop()
+    drawFood()
+    image.paste(kona.img, (kona.x, kona.y))
     drawMenuScreen()
     image = image.transpose(Image.ROTATE_180)
     epd.displayPartial(epd.getbuffer(image))
@@ -126,29 +142,27 @@ def printsStats():
     print(f'{kona.exhausted} exhausted')
 
 
-def menu():
-    global draw, courser
-    x = 0
-    y = 0
-    if courser == 0:
-        x = 98
-        y = x + 31
-    elif courser == 1:
-        x = 138
-        y = x + 35
-    elif courser == 2:
-        x = 178
-        y = x + 38
-    draw.rectangle((x, 4, y, 27), outline=0, width=2)
-    draw.text((100, 6), 'quiz', font=font15, fill=0)
-    draw.text((140, 6), 'Meal', font=font15, fill=0)
-    draw.text((180, 6), 'clean', font=font15, fill=0)
-
-
 def drawMenuScreen():
+    global draw, courser, mealLeft
     if menuSwitch:
         draw.rectangle((20, 20, 230, 100), fill=255)
-        draw.rectangle((20, 20, 230, 100), outline=0, width=3)
+        draw.rectangle((20, 20, 230, 100), outline=0, width=4)
+        x = 0
+        y = 0
+        if courser == 0:
+            x = 25
+            y = x + 56
+        elif courser == 1:
+            x = 85
+            y = x + 63
+        elif courser == 2:
+            x = 150
+            y = x + 67
+        draw.rectangle((x, 37, y, 78), outline=0, width=2)
+        draw.text((30, 42), 'quiz', font=font25, fill=0)
+        draw.text((90, 42), 'Meal', font=font25, fill=0)
+        draw.text((155, 42), 'clean', font=font25, fill=0)
+        draw.text((94, 24), f'Meal left: {mealLeft}', font=font10, fill=0)
 
 
 def menuOnOff():
@@ -178,12 +192,30 @@ def courserright():
 
 def select():
     global courser
-    if courser == 2:
-        cleanPoop()
+    if courser == 2 and menuSwitch:
+        clean()
+        menuOnOff()
+    elif courser == 1 and menuSwitch:
+        meal()
+        menuOnOff()
+    elif courser == 0 and menuSwitch:
+        quiz()
+        menuOnOff()
 
 
-def cleanPoop():
+def clean():
     kona.haspooped = False
+
+
+def meal():
+    global foodOnScreen, mealLeft
+    foodOnScreen = 3
+    mealLeft -= 1
+
+
+def quiz():
+    global mealLeft
+    mealLeft += 1
 
 
 btn_a.when_pressed = select
@@ -255,10 +287,14 @@ class Kona:
         kona.img = normal
 
     def eat():
-        kona.img = eat
-        # kona.food = kona.food + 1
-        updateScreen()
-        kona.img = normal
+        global foodOnScreen
+        while foodOnScreen > 0:
+            kona.img = eat
+            kona.food = kona.food + 1
+            updateScreen()
+            kona.img = normal
+            foodOnScreen -= 1
+            updateScreen()
 
     def happy():
         kona.img = happy1
@@ -320,7 +356,7 @@ class Kona:
 
 
 kona = Kona
-animations = [kona.walkRight, kona.walkleft, kona.eat, kona.happy, kona.bored]
+animations = [kona.walkRight, kona.walkleft, kona.happy, kona.bored, kona.eat]
 # animations = [kona.sleep]
 
 

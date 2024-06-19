@@ -26,7 +26,8 @@ class Paddle:
         self.btn_b.when_pressed = self.goBack
 
 
-    def initialPaddle(self, draw):
+
+    def initiatePaddle(self, draw):
         draw.rectangle([(self.x_0, self.y_0), (self.x_1, self.y_1)], fill=0, width=1)
 
     """ def updateDisplay(self):
@@ -40,13 +41,13 @@ class Paddle:
         if self.x_1 < 198:
             self.x_0 = self.x_0 + 10
             self.x_1 = self.x_1 + 10
-            self.updateDisplay()
+            #self.updateDisplay()
 
     def moveRight(self):
         if self.x_0 > 0:
             self.x_0 = self.x_0 - 10
             self.x_1 = self.x_1 - 10
-            self.updateDisplay()
+            #self.updateDisplay()
 
     def goBack(self):
         pass

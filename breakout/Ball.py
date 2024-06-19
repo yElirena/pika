@@ -8,8 +8,6 @@ class Ball:
         self.upperY = 60
         self.lowerX = 80
         self.lowerY = 85
-
-        self.initiateBall()
     
     def initiateBall(self, draw):
         draw.ellipse([(self.upperX, self.upperY), (self.lowerX, self.lowerY)], fill=0)

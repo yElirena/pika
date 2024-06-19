@@ -18,10 +18,11 @@ class Ball:
         draw.ellipse(self.size, fill=1)
     
     def move(self, draw):
+        self.checkCollisionWithWalls()
         self.clearBall(draw)
 
         newSize = [(self.size[0][0] + self.moveX, self.size[0][1] + self.moveY),
-                    (self.size[1][0] + self.moveX, self.size[1][1] + self.moveY)]
+                    (self.size[1][0] + self.moveX, self.size[1][1] + self.moveY)] #this needs to be - not + later
         self.size = newSize
         self.initiateBall(draw)
         logging.info(f"Ball coordinates: Top-Left ({self.size[0][0]}, {self.size[0][1]}), Bottom-Right ({self.size[1][0]}, {self.size[1][1]})")
@@ -32,15 +33,16 @@ class Ball:
             self.moveX *= -1
             return
         #hopefully detects collision upper wall
-        if self.size[0][1] < 0:
+        if self.size[0][1] > 120:
             self.moveY *= -1
             return
         #hopefully detects collosion with bottom wall
-        if self.size[1][1] > self.epd.height:
+        if self.size[1][1] < 0:
             self.reset()
             return
     
-    def reset(self):
+    def reset(self, draw):
         self.size = [(40, 45), (45, 50)]
         self.moveX = movement
         self.moveY = movement
+        self.initiateBall(draw)

@@ -29,7 +29,7 @@ class Paddle:
         if self.x_1 < 250:
             self.x_0 = self.x_0 + 10
             self.x_1 = self.x_1 + 10
-            logging.info(f"Paddle coordinates: Top-Left ({self.x_0}, {self.y_0}), Bottom-Right ({self.x_1}, {self.y_1})")
+            #logging.info(f"Paddle coordinates: Top-Left ({self.x_0}, {self.y_0}), Bottom-Right ({self.x_1}, {self.y_1})")
 
     def moveRight(self):
         if self.x_0 > 0:

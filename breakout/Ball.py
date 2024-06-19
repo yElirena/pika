@@ -29,11 +29,11 @@ class Ball:
     
     def checkCollisionWithWalls(self):
         #hopefully detects collision left and right walls
-        if self.size[0][0] < 0 or self.size[1][0] > self.epd.width:
+        if self.size[0][0] < 0 or self.size[1][0] > 250:
             self.moveX *= -1
             return
         #hopefully detects collision upper wall
-        if self.size[0][1] > 120:
+        if self.size[0][1] > 110:
             self.moveY *= -1
             return
         #hopefully detects collosion with bottom wall
@@ -41,8 +41,7 @@ class Ball:
             self.reset()
             return
     
-    def reset(self, draw):
+    def reset(self):
         self.size = [(40, 45), (45, 50)]
         self.moveX = movement
         self.moveY = movement
-        self.initiateBall(draw)

@@ -1,0 +1,1 @@
+qi = 'public class A {\n  private int i = 6;\n  private int j = i;\n  public A() {\n    i = 5;\n  }\n   public static void main(String[] args) {\n     A a = new A();\n     System.out.println(a.i + a.j);\n } }'

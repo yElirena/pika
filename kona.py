@@ -19,15 +19,12 @@ btn_b = gpiozero.Button(12)
 tb = gpiozero.TonalBuzzer(5)
 
 
-# Main menu program
+# setup variables
 picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
-libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
 
 font25 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 25)
 font10 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 10)
 
-
-# setup variables
 courser = 0
 poopPosX = 0
 poopPosY = 0
@@ -37,7 +34,7 @@ foodOnScreen = 0
 mealLeft = 0
 
 
-# images age 1
+# images
 bread1 = Image.open(os.path.join(picdir, 'bread1.bmp'))
 bread2 = Image.open(os.path.join(picdir, 'bread2.bmp'))
 bread3 = Image.open(os.path.join(picdir, 'bread3.bmp'))
@@ -54,23 +51,9 @@ eat = Image.open(os.path.join(picdir, 'yeat.bmp'))
 happy1 = Image.open(os.path.join(picdir, 'yhappy1.bmp'))
 happy2 = Image.open(os.path.join(picdir, 'yhappy2.bmp'))
 happy3 = Image.open(os.path.join(picdir, 'happy3.bmp'))
-# images age 0
-# ynormal = Image.open(os.path.join(picdir, 'ynormal.bmp'))
-# ywalk = Image.open(os.path.join(picdir, 'ywalk.bmp'))
-# ybored1 = Image.open(os.path.join(picdir, 'ybored1.bmp'))
-# ybored2 = Image.open(os.path.join(picdir, 'ybored2.bmp'))
-# ysleep1 = Image.open(os.path.join(picdir, 'ysleep1.bmp'))
-# ysleep2 = Image.open(os.path.join(picdir, 'ysleep2.bmp'))
-# ysleep3 = Image.open(os.path.join(picdir, 'ysleep3.bmp'))
-# yeat = Image.open(os.path.join(picdir, 'yeat.bmp'))
-# yhappy1 = Image.open(os.path.join(picdir, 'yhappy1.bmp'))
-# yhappy2 = Image.open(os.path.join(picdir, 'yhappy2.bmp'))
-
-# animationPictures = [normal, walk]
-# for img in animationPictures:
-#     img = img.resize((48, 48), Image.ANTIALIAS)
 
 
+# display functions
 def loadscreen():
     global image
     load_bmp = Image.open(os.path.join(picdir, 'kona.bmp'))
@@ -128,18 +111,11 @@ def updateScreen():
     background()
     healthbar()
     drawpoop()
-    drawFood()
     image.paste(kona.img, (kona.x, kona.y))
+    drawFood()
     drawMenuScreen()
     image = image.transpose(Image.ROTATE_180)
     epd.displayPartial(epd.getbuffer(image))
-
-
-def printsStats():
-    print(f'{kona.age}  age')
-    print(f'{kona.boredness} bored')
-    print(f'{kona.food} food')
-    print(f'{kona.exhausted} exhausted')
 
 
 def drawMenuScreen():
@@ -163,6 +139,14 @@ def drawMenuScreen():
         draw.text((90, 42), 'Meal', font=font25, fill=0)
         draw.text((155, 42), 'clean', font=font25, fill=0)
         draw.text((94, 24), f'Meal left: {mealLeft}', font=font10, fill=0)
+
+
+# Menu functions
+def printsStats():
+    print(f'{kona.age}  age')
+    print(f'{kona.boredness} bored')
+    print(f'{kona.food} food')
+    print(f'{kona.exhausted} exhausted')
 
 
 def menuOnOff():
@@ -203,6 +187,7 @@ def select():
         menuOnOff()
 
 
+# interact functions
 def clean():
     kona.haspooped = False
 
@@ -327,16 +312,6 @@ class Kona:
     def evolve():
         global normal, walk, bored1, bored2, sleep1, sleep2, sleep3, eat, happy1, happy2, happy3
         kona.y = 35
-        # ynormal = Image.open(os.path.join(picdir, 'ynormal.bmp'))
-        # ywalk = Image.open(os.path.join(picdir, 'ywalk.bmp'))
-        # ybored1 = Image.open(os.path.join(picdir, 'ybored1.bmp'))
-        # ybored2 = Image.open(os.path.join(picdir, 'ybored2.bmp'))
-        # ysleep1 = Image.open(os.path.join(picdir, 'ysleep1.bmp'))
-        # ysleep2 = Image.open(os.path.join(picdir, 'ysleep2.bmp'))
-        # ysleep3 = Image.open(os.path.join(picdir, 'ysleep3.bmp'))
-        # yeat = Image.open(os.path.join(picdir, 'yeat.bmp'))
-        # yhappy1 = Image.open(os.path.join(picdir, 'yhappy1.bmp'))
-        # yhappy2 = Image.open(os.path.join(picdir, 'yhappy2.bmp'))
         normal = Image.open(os.path.join(picdir, 'normal.bmp'))
         walk = Image.open(os.path.join(picdir, 'walk.bmp'))
         bored1 = Image.open(os.path.join(picdir, 'bored1.bmp'))
@@ -374,24 +349,16 @@ try:
     updateScreen()
 
     # kona.hatch()
-    # kona.food = 8
-    # updateScreen()
-    # time.sleep(1)
-    # kona.eat()
-    # updateScreen()
-    # kona.food = 3
-    # kona.walk()
-    # time.sleep(1)
-    # kona.walk()
+
     count = 0
     while kona.alive:
         printsStats()
         count += 1
         if count > 10:
             kona.evolve()
-        if kona.exhausted >= 30:
+        if kona.exhausted >= 35:
             kona.sleep()
-        if count % 5 == 0:
+        if count % 20 == 0:
             if not kona.haspooped:
                 kona.poop()
         random.choice(animations)()

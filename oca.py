@@ -6,7 +6,6 @@ import logging
 from waveshare_epd import epd2in13_V4
 import time
 from PIL import Image, ImageDraw, ImageFont
-from signal import pause
 import random
 
 
@@ -32,6 +31,7 @@ courser = 0
 poopPosX = 0
 poopPosY = 0
 poopSwitch = 0
+menuSwitch = False
 
 
 # images age 1
@@ -93,14 +93,14 @@ def healthbar():
     heart = Image.open(os.path.join(picdir, 'heart.bmp'))
     x = 10
     for i in range(num):
-        image.paste(heart, (10+(i*x), 12))
+        image.paste(heart, (10 + (i * x), 12))
 
 
 def drawpoop():
     global image, poopPosX, poopPosY, poopSwitch
     poopSwitch += 1
     if kona.haspooped:
-        if poopSwitch %2 == 0:
+        if poopSwitch % 2 == 0:
             image.paste(poop1, (poopPosX, poopPosY))
         else:
             image.paste(poop2, (poopPosX, poopPosY))
@@ -112,16 +112,16 @@ def updateScreen():
     background()
     menu()
     healthbar()
-    # draw.rectangle([(kona.x, kona.x), (kona.x+48, kona.x+48)], fill=255)
     image.paste(kona.img, (kona.x, kona.y))
     drawpoop()
+    drawMenuScreen()
     image = image.transpose(Image.ROTATE_180)
     epd.displayPartial(epd.getbuffer(image))
 
 
 def printsStats():
     print(f'{kona.age}  age')
-    print(kona.boredness + " bored")
+    print(f'{kona.boredness} bored')
     print(f'{kona.food} food')
     print(f'{kona.exhausted} exhausted')
 
@@ -132,23 +132,37 @@ def menu():
     y = 0
     if courser == 0:
         x = 98
-        y = x+31
+        y = x + 31
     elif courser == 1:
         x = 138
-        y = x+35
+        y = x + 35
     elif courser == 2:
         x = 178
-        y = x+38
+        y = x + 38
     draw.rectangle((x, 4, y, 27), outline=0, width=2)
     draw.text((100, 6), 'quiz', font=font15, fill=0)
     draw.text((140, 6), 'Meal', font=font15, fill=0)
     draw.text((180, 6), 'clean', font=font15, fill=0)
 
 
+def drawMenuScreen():
+    if menuSwitch:
+        draw.rectangle((20, 20, 230, 100), fill=255)
+        draw.rectangle((20, 20, 230, 100), outline=0, width=3)
+
+
+def menuOnOff():
+    global menuSwitch
+    if menuSwitch:
+        menuSwitch = False
+    else:
+        menuSwitch = True
+
+
 # selectable menu function
 def courserleft():
     global courser
-    if courser-1 >= 0:
+    if courser - 1 >= 0:
         courser -= 1
     else:
         courser = 2
@@ -156,7 +170,7 @@ def courserleft():
 
 def courserright():
     global courser
-    if courser+1 <= 2:
+    if courser + 1 <= 2:
         courser += 1
     else:
         courser = 0
@@ -173,6 +187,8 @@ def cleanPoop():
 
 
 btn_a.when_pressed = select
+btn_b.when_pressed = menuOnOff
+
 btn_links.when_pressed = courserleft
 btn_rechts.when_pressed = courserright
 
@@ -188,7 +204,6 @@ class Kona:
     img = normal
     haspooped = False
 
-
     def hatch():
         global draw, image
         egg1 = Image.open(os.path.join(picdir, 'egg1.bmp'))
@@ -203,7 +218,7 @@ class Kona:
             c += 1
             egg = egg.rotate(180)
             egg = egg.resize((64, 64), Image.ANTIALIAS)
-            image.paste(egg, (kona.x, kona.y-20))
+            image.paste(egg, (kona.x, kona.y - 20))
             tb.play(gpiozero.tones.Tone.from_frequency(440))
             if c == len(eggs):
                 time.sleep(0.5)
@@ -213,34 +228,31 @@ class Kona:
             epd.displayPartial(epd.getbuffer(image))
             time.sleep(1)
 
-
     def walkRight():
         global draw, image
         num = random.randint(1, 9)
         kona.img = walk
         for i in range(num):
             kona.exhausted += 1
-            if kona.x-10 > 0:
+            if kona.x - 10 > 0:
                 kona.x -= 10
                 updateScreen()
             else:
                 break
         kona.img = normal
 
-    
     def walkleft():
         global draw, image
         num = random.randint(1, 9)
         kona.img = walk.transpose(Image.FLIP_LEFT_RIGHT)
         for i in range(num):
             kona.exhausted += 1
-            if kona.x+10 < 190:
+            if kona.x + 10 < 190:
                 kona.x += 10
                 updateScreen()
             else:
                 break
         kona.img = normal
-
 
     def eat():
         kona.img = eat
@@ -248,7 +260,6 @@ class Kona:
         updateScreen()
         kona.img = normal
 
-    
     def happy():
         kona.img = happy1
         updateScreen()
@@ -257,14 +268,12 @@ class Kona:
             updateScreen()
             kona.img = happy3
 
-
     def bored():
         kona.img = bored1
         updateScreen()
         kona.img = bored2
         updateScreen()
         kona.img = normal
-
 
     def sleep():
         global image, sleep
@@ -277,7 +286,6 @@ class Kona:
             updateScreen()
         kona.exhausted = 0
         kona.img = normal
-
 
     def evolve():
         global normal, walk, bored1, bored2, sleep1, sleep2, sleep3, eat, happy1, happy2, happy3
@@ -304,7 +312,6 @@ class Kona:
         happy2 = Image.open(os.path.join(picdir, 'happy2.bmp'))
         happy3 = Image.open(os.path.join(picdir, 'happy3.bmp'))
 
-
     def poop():
         global poopPosX, poopPosY
         kona.haspooped = True
@@ -326,7 +333,7 @@ try:
     draw = ImageDraw.Draw(image)
 
     loadscreen()
-    
+
     updateScreen()
 
     # kona.hatch()
@@ -341,21 +348,18 @@ try:
     # kona.walk()
     count = 0
     while kona.alive:
-        # printsStats()
+        printsStats()
         count += 1
         if count > 10:
             kona.evolve()
         if kona.exhausted >= 30:
             kona.sleep()
-        if count %5 == 0:
-            if kona.haspooped == False:
+        if count % 5 == 0:
+            if not kona.haspooped:
                 kona.poop()
         random.choice(animations)()
-        time.sleep(random.randint(1,2))
+        time.sleep(random.randint(1, 2))
         updateScreen()
-        
-
-    #pause()
 
     epd.sleep()
 

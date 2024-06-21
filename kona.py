@@ -283,18 +283,16 @@ class Kona:
         kona.img = normal
 
     def eat():
-        global foodOnScreen
-        if foodOnScreen:
-            kona.move_to_food()
-            while foodOnScreen > 0:
-                kona.img = eat
-                kona.food = kona.food + 1
-                updateScreen()
-                kona.img = normal
-                foodOnScreen -= 1
-                updateScreen()
-            kona.happyness += 10
-            kona.haseaten = True
+        kona.move_to_food()
+        while foodOnScreen > 0:
+            kona.img = eat
+            kona.food = kona.food + 1
+            updateScreen()
+            kona.img = normal
+            foodOnScreen -= 1
+            updateScreen()
+        kona.happyness += 10
+        kona.haseaten = True
 
     def happy():
         kona.img = happy1
@@ -347,6 +345,7 @@ class Kona:
     def poop():
         global poopPosX, poopPosY
         kona.haspooped = True
+        kona.haseaten = False
         poopPosX = kona.x - 20
         poopPosY = kona.y + 32
 
@@ -364,7 +363,7 @@ class Kona:
 
 
 kona = Kona
-animations = [kona.walkRight, kona.walkleft, kona.bored, kona.eat, kona.evolve, kona.sleep]
+animations = [kona.walkRight, kona.walkleft, kona.bored, kona.evolve, kona.sleep]
 cachedAnimations = []
 
 
@@ -384,10 +383,16 @@ try:
 
     while kona.alive:
         printsStats()
+        if foodOnScreen > 0:
+            animations.append(kona.eat)
+        elif foodOnScreen == 0 and kona.eat in animations:
+            animations.remove(kona.eat)
+
         if kona.haseaten and kona.poop not in animations:
             animations.append(kona.poop)
-        elif not kona.haseaten and kona.poop in animations:
+        elif kona.haspooped and kona.poop in animations:
             animations.remove(kona.poop)
+
         if kona.haspooped and kona.happyness - 1 >= 0:
             kona.happyness -= 1
         if len(cachedAnimations) >= 1:

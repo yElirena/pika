@@ -8,82 +8,132 @@ from waveshare_epd import epd2in13_V4
 import time
 from PIL import Image, ImageDraw, ImageFont
 from signal import pause
+import re
 
 class Field:
+    """
+    Repräsentiert ein Feld mit einem Namen und Positionen (x, y).
+    Kann benachbarte Felder in den Richtungen Norden, Osten, Süden und Westen haben.
+    """
+
     def __init__(self, name):
-        self.x_0 = 0
-        self.y_0 = 0
-        self.x_1 = 0
-        self.y_1 = 0
-        self.name = name
-        self.north = None
-        self.east = None
-        self.south = None
-        self.west = None
+        """
+        Initialisiert ein Feld mit dem gegebenen Namen und standardmäßig Nullpositionen.
+        
+        Parameter:
+        name (str): Der Name des Feldes.
+        """
+        self.x_0 = 0  # Start x-Position
+        self.y_0 = 0  # Start y-Position
+        self.x_1 = 0  # End x-Position
+        self.y_1 = 0  # End y-Position
+        self.name = name  # Name des Feldes
+        self.north = None  # Nördliches Nachbarfeld
+        self.east = None  # Östliches Nachbarfeld
+        self.south = None  # Südliches Nachbarfeld
+        self.west = None  # Westliches Nachbarfeld
     
     def set_XY_0(self, x, y):
+        """
+        Setzt die Startposition (x_0, y_0) des Feldes.
+        
+        Parameter:
+        x (int): Die x-Koordinate der Startposition.
+        y (int): Die y-Koordinate der Startposition.
+        """
         self.x_0 = x
         self.y_0 = y
 
     def set_XY_1(self, x, y):
+        """
+        Setzt die Endposition (x_1, y_1) des Feldes.
+        
+        Parameter:
+        x (int): Die x-Koordinate der Endposition.
+        y (int): Die y-Koordinate der Endposition.
+        """
         self.x_1 = x
         self.y_1 = y
 
     def set_north(self, north):
+        """
+        Setzt das nördliche Nachbarfeld.
+        
+        Parameter:
+        north (Field): Das nördliche Nachbarfeld.
+        """
         self.north = north
 
     def set_east(self, east):
+        """
+        Setzt das östliche Nachbarfeld.
+        
+        Parameter:
+        east (Field): Das östliche Nachbarfeld.
+        """
         self.east = east
 
     def set_south(self, south):
+        """
+        Setzt das südliche Nachbarfeld.
+        
+        Parameter:
+        south (Field): Das südliche Nachbarfeld.
+        """
         self.south = south
 
     def set_west(self, west):
+        """
+        Setzt das westliche Nachbarfeld.
+        
+        Parameter:
+        west (Field): Das westliche Nachbarfeld.
+        """
         self.west = west
 
     def set_name(self, name):
+        """
+        Setzt den Namen des Feldes.
+        
+        Parameter:
+        name (str): Der neue Name des Feldes.
+        """
         self.name = name
 
-
 class Menue:
-    def __init__(self):
-        self.field_array = [[]]
-        self.current_field = Field("0")
+    """
+    Repräsentiert ein Menü, das eine Liste von Feldern und ein aktuelles Feld enthält.
+    """
 
+    def __init__(self, name):
+        """
+        Initialisiert das Menü mit einem Namen
+        
+        Parameter:
+        name (str): Der Name des Menüs.
+        """
+        self.field_array = []  # Liste der Felder im Menü
+        self.name = name  # Name des Menüs
 
     def set_feldarray(self, field_array):
-        self.field_array = field_array
+        """
+        Setzt das Array der Felder im Menü.
         
+        Parameter:
+        field_array (list): Die neue Liste der Felder.
+        """
+        self.field_array = field_array
 
     def set_current_field(self, current_field):
+        """
+        Setzt das aktuelle Feld im Menü.
+        
+        Parameter:
+        current_field (Field): Das neue aktuelle Feld.
+        """
         self.current_field = current_field
 
-
-
-
-## Main Menue
-feld_00 = Field("Thomas")
-feld_00.set_XY_0(231, 89)
-feld_00.set_XY_1(134, 57)
-feld_01 = Field("Marv")
-feld_01.set_XY_0(115, 89)
-feld_01.set_XY_1(19, 57)
-feld_10 = Field("Roman")
-feld_10.set_XY_0(231, 40)
-feld_10.set_XY_1(134, 8)
-feld_11 = Field("Marie")
-feld_11.set_XY_0(115, 40)
-feld_11.set_XY_1(19, 8)
-
-field_array = [[feld_00, feld_01],
-               [feld_01, feld_11]]
-
-main_menue = Menue()
-main_menue.set_feldarray(field_array)
-main_menue.set_current_field(field_array[0][0])
-
-
-## Tastatur klein
+## Tastaturfelder
 field_space = Field(" ")
 field_space.set_XY_0(152, 12)
 field_space.set_XY_1(97, 4)
@@ -292,8 +342,16 @@ field_zirkunflex = Field("^")
 field_zirkunflex.set_XY_0(245, 63)
 field_zirkunflex.set_XY_1(235, 56)
 
+field_send = Field("send")
+field_send.set_XY_0(27, 94)
+field_send.set_XY_1(4, 84)
 
-## nachbarn setzen
+field_exit = Field("exit")
+field_exit.set_XY_0(245, 12)
+field_exit.set_XY_1(222, 4)
+
+
+## Nachbarfelder setzen
 field_zirkunflex.set_east(field_1)
 
 field_1.set_west(field_zirkunflex)
@@ -331,20 +389,25 @@ field_8.set_south(field_i)
 field_9.set_east(field_0)
 field_9.set_west(field_8)
 field_9.set_south(field_o)
+field_9.set_north(field_send)
 
 field_0.set_east(field_sz)
 field_0.set_west(field_9)
 field_0.set_south(field_p)
+field_0.set_north(field_send)
 
 field_sz.set_east(field_apostroph)
 field_sz.set_west(field_0)
 field_sz.set_south(field_ue)
+field_sz.set_north(field_send)
 
 field_apostroph.set_east(field_back)
 field_apostroph.set_west(field_sz)
 field_apostroph.set_south(field_plus)
+field_apostroph.set_north(field_send)
 
 field_back.set_west(field_apostroph)
+field_back.set_north(field_send)
 
 field_q.set_north(field_1)
 field_q.set_east(field_w)
@@ -441,7 +504,7 @@ field_h.set_west(field_g)
 field_g.set_north(field_t)
 field_g.set_east(field_h)
 field_g.set_south(field_v)
-field_v.set_west(field_v)
+field_v.set_west(field_h)
 
 field_f.set_north(field_r)
 field_f.set_east(field_g)
@@ -463,10 +526,12 @@ field_a.set_east(field_s)
 field_a.set_south(field_y)
 
 field_smallerAs.set_east(field_y)
+field_smallerAs.set_south(field_exit)
 
 field_y.set_north(field_a)
 field_y.set_east(field_x)
 field_y.set_west(field_smallerAs)
+field_y.set_south(field_exit)
 
 field_x.set_north(field_d)
 field_x.set_east(field_c)
@@ -519,24 +584,81 @@ field_space.set_west(field_shift)
 
 field_shift.set_north(field_c)
 field_shift.set_east(field_space)
+field_shift.set_west(field_exit)
 
-## menue
-Passchecker = Menue()
+field_send.set_south(field_back)
 
-tastatur_klein = [field_space, field_altGr, field_shift, field_hyphen, field_dot, field_comma, field_m, field_n, field_b, field_v,
+field_exit.set_north(field_smallerAs)
+field_exit.set_east(field_shift)
+
+## Passchecker / E-MailChecker Menue
+Passchecker_menue = Menue("passchecker menue")
+
+tastatur = [field_space, field_altGr, field_shift, field_hyphen, field_dot, field_comma, field_m, field_n, field_b, field_v,
                   field_c, field_x, field_y, field_z, field_smallerAs, field_hashtag, field_ae, field_oe, field_l, field_k, field_j,
                   field_h, field_g, field_f, field_d, field_s, field_a, field_plus, field_ue, field_p, field_o, field_i, field_u, field_z,
                   field_t, field_r, field_e, field_w, field_q, field_back, field_apostroph, field_sz, field_0, field_9, field_8,
-                  field_7, field_6, field_5, field_4, field_3, field_2, field_1, field_zirkunflex]
+                  field_7, field_6, field_5, field_4, field_3, field_2, field_1, field_zirkunflex, field_send, field_exit]
 
-Passchecker.set_feldarray(tastatur_klein)
-Passchecker.set_current_field(field_1)
+Passchecker_menue.set_feldarray(tastatur)
+Passchecker_menue.set_current_field(field_1)
 
-##
-oldRect = Passchecker.current_field
+## menue marv
+field_passchecker = Field("passchecker")
+field_passchecker.set_XY_0(231, 75)
+field_passchecker.set_XY_1(163, 46)
+
+field_emailchecker = Field("baustelle")
+field_emailchecker.set_XY_0(106, 75)
+field_emailchecker.set_XY_1(37, 46)
+
+field_main_back = Field("exit")
+field_main_back.set_XY_0(245, 12)
+field_main_back.set_XY_1(222, 4)
+
+field_passchecker.set_east(field_emailchecker)
+field_passchecker.set_south(field_main_back)
+field_main_back.set_north(field_passchecker)
+field_emailchecker.set_west(field_passchecker)
+
+Marv_menue = Menue("marv menue")
+
+felder = [field_passchecker, field_emailchecker, field_main_back]
+
+Marv_menue.set_feldarray(felder)
+Marv_menue.set_current_field(field_passchecker)
+
+
+# Verzeichnisse für Bilder und Bibliotheken festlegen
+picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
+libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
+
+# Schriftart einrichten
+# Schriftart für die Texte auf dem Display laden
+font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 8)
+
+# GPIO-Buttons initialisieren
+# Konfiguration der GPIO-Pins für die Buttons
+btn_links = gpiozero.Button(19)
+btn_rechts = gpiozero.Button(20)
+btn_oben = gpiozero.Button(16)
+btn_unten = gpiozero.Button(26)
+btn_a = gpiozero.Button(6)
+btn_b = gpiozero.Button(12)
+
+# Aktuelles Menü initialisieren
+# Setzt das aktuelle Menü auf 'Marv_menue'
+current_menue = Marv_menue
+
+# oldRect und Passwort initialisieren
+oldRect = None
 password = ""
 
 def keyboard_uppercase():
+    """
+    Setzt die Namen der Felder auf ihre entsprechenden Zeichen im Großbuchstaben- und
+    Symbolmodus der Tastatur.
+    """
     field_zirkunflex.set_name("°")
     field_1.set_name("!")
     field_2.set_name("\"\"")
@@ -587,6 +709,10 @@ def keyboard_uppercase():
     field_hyphen.set_name("_")
 
 def keyboard_lowercase():
+    """
+    Setzt die Namen der Felder auf ihre entsprechenden Zeichen im Kleinbuchstaben- und
+    Symbolmodus der Tastatur.
+    """
     field_zirkunflex.set_name("^")
     field_1.set_name("1")
     field_2.set_name("2")
@@ -637,6 +763,10 @@ def keyboard_lowercase():
     field_hyphen.set_name("-")
 
 def keyboard_altGr():
+    """
+    Setzt die Namen der Felder auf ihre entsprechenden Zeichen im AltGr-Modus der Tastatur,
+    der zusätzliche Sonderzeichen und Symbole bereitstellt.
+    """
     field_1.set_name("¹")
     field_2.set_name("²")
     field_3.set_name("³")
@@ -662,161 +792,391 @@ def keyboard_altGr():
     field_x.set_name("«")
     field_c.set_name("¢")
 
+def draw_marv_menue():
+    """
+    Zeichnet das Menü für Marv. Aktualisiert das aktuelle Feld und rotiert das Bild zweimal um 180 Grad.
+    Zeichnet Text und Rechtecke auf die Felder.
+    """
+    global image, draw
 
-def draw_currentField(field):
-    global draw, image, oldRect
+    # Zeichne das aktuelle Feld hervor
+    draw_currentField(Marv_menue.current_field)
 
-    draw.rectangle([(oldRect.x_0, oldRect.y_0), (oldRect.x_1, oldRect.y_1)], outline=0, width=1)
-    oldRect = field
-    draw.rectangle([(field.x_0, field.y_0), (field.x_1, field.y_1)], outline=255, width=1)
-    epd.displayPartial(epd.getbuffer(image))
-
-
-def draw_password():
-    global password, draw, image, font15
-    text_x = (250 - 208 +1)
-    text_y = (122 - 96 -1)
-
-    draw.rectangle([(207, 95),(42, 85)], fill=255)
-    image = image.rotate(180, expand=True)
-    draw = ImageDraw.Draw(image)
-    draw.text([text_x, text_y], password)
+    # Drehe das Bild um 180 Grad und aktualisiere das Zeichenobjekt
     image = image.rotate(180, expand=True)
     draw = ImageDraw.Draw(image)
 
-
-
-    epd.displayPartial(epd.getbuffer(image))
-
-def press_logic(num):
-    global password
-    if num == 0:
-        if(Passchecker.current_field.north is not None):
-            Passchecker.current_field = Passchecker.current_field.north
-            draw_currentField(Passchecker.current_field)
-    elif num == 1:
-        if(Passchecker.current_field.east is not None):
-            Passchecker.current_field = Passchecker.current_field.east
-            draw_currentField(Passchecker.current_field)
-    elif num == 2:
-        if(Passchecker.current_field.south is not None):
-            Passchecker.current_field = Passchecker.current_field.south
-            draw_currentField(Passchecker.current_field)
-    elif num == 3:
-        if(Passchecker.current_field.west is not None):
-            Passchecker.current_field = Passchecker.current_field.west
-            draw_currentField(Passchecker.current_field)
-    elif num == 4:
-        if(Passchecker.current_field.name == "Shift"):
-            if(Passchecker.field_array[3].name == "-"):
-                keyboard_uppercase()
-                draw_current_keyboard()
-                draw_password()
-            else:
-                keyboard_lowercase()
-                draw_current_keyboard()
-                draw_password()
-        elif(Passchecker.current_field.name == "Alt Gr"):
-            if(Passchecker.field_array[38].name == "@"):
-                keyboard_lowercase()
-                draw_current_keyboard()
-                draw_password()
-            else:
-                keyboard_altGr()
-                draw_current_keyboard()
-                draw_password()
-        elif(Passchecker.current_field.name == "back"):
-            if(len(password) > 0):
-                password = password[0:-1]
-                draw_password()
-        else:
-            password += Passchecker.current_field.name
-            draw_password()
-    elif num == 5:
-        pass
-
-def draw_current_keyboard():
-    global draw, image
-    draw.rectangle([(250, 65),(0, 0)], outline=255, fill=255)
-    image = image.rotate(180, expand=True)
-    draw = ImageDraw.Draw(image)
-    for i in tastatur_klein:
-        # Calculate text position (center of the rectangle)
+    # Zeichne den Text für jedes Feld
+    for i in felder:
+        # Zeiche den Text an die richtige position
         text_x = (250 - i.x_0+1)
         text_y = (122 - i.y_0-1)
         draw.text((text_x, text_y), i.name, font=font15, fill=0)
 
+    # Drehe das Bild erneut um 180 Grad und aktualisiere das Zeichenobjekt
     image = image.rotate(180, expand=True)  # Rotate the image
     draw = ImageDraw.Draw(image)
 
-    # Draw rectangles and text
-    for i in tastatur_klein:
+    # Zeichne die Rechtecke und den Text für jedes Feld
+    for i in felder:
         draw.rectangle([(i.x_0, i.y_0), (i.x_1, i.y_1)], outline=0, width=1)
-    draw.rectangle([(208, 96), 41, 84], outline=0, width=1)
 
-    # Draw image to screen
+def draw_currentField(field):
+    """
+    Zeichnet das aktuelle Feld. Entfernt die Hervorhebung vom vorherigen Feld und zeichnet
+    das neue aktuelle Feld hervor.
+    
+    Parameter:
+    field (Field): Das aktuelle Feld, das hervorgehoben werden soll.
+    """
+    global draw, image, oldRect
+
+    # Entferne die Hervorhebung vom vorherigen Feld, falls vorhanden
+    if(oldRect is not None):
+        draw.rectangle([(oldRect.x_0, oldRect.y_0), (oldRect.x_1, oldRect.y_1)], outline=0, width=1)
+    
+    # Aktualisiere oldRect auf das aktuelle Feld
+    oldRect = field
+
+    # Zeichne das neue aktuelle Feld
+    draw.rectangle([(field.x_0, field.y_0), (field.x_1, field.y_1)], outline=255, width=1)
+
+    # Aktualisiere das Display teilweise, um das neue Feld hervorzuheben
     epd.displayPartial(epd.getbuffer(image))
 
+def draw_password():
+    """
+    Zeichnet das Passwort auf das Bild. Löscht den Bereich, in dem das Passwort gezeichnet wird,
+    und rotiert das Bild zweimal um 180 Grad, um den Text zu zeichnen.
+    """
+    global password, draw, image
+
+    # Berechne die Textposition für das Passwort
+    text_x = (250 - 208 +1)
+    text_y = (122 - 96 -1)
+
+    # Lösche den Bereich, in dem das Passwort gezeichnet wird
+    draw.rectangle([(207, 95),(42, 85)], fill=255)
+
+    # Drehe das Bild um 180 Grad und aktualisiere das Zeichenobjekt
+    image = image.rotate(180, expand=True)
+    draw = ImageDraw.Draw(image)
+
+    # Zeichne das Passwort
+    draw.text([text_x, text_y], password)
+
+    # Drehe das Bild erneut um 180 Grad und aktualisiere das Zeichenobjekt
+    image = image.rotate(180, expand=True)
+    draw = ImageDraw.Draw(image)
+
+    # Aktualisiere das Display teilweise, um das gezeichnete Passwort anzuzeigen
+    epd.displayPartial(epd.getbuffer(image))
+
+def draw_result(result):
+    """
+    Zeichnet das result auf das Bild. Löscht den Bereich, in dem das result gezeichnet wird,
+    und rotiert das Bild zweimal um 180 Grad, um den Text zu zeichnen.
+    """
+    global password, draw, image
+
+    # Berechne die Textposition für das Passwort
+    text_x = (250 - 208 +1)
+    text_y = (140 - 96 -1)
+
+    # Lösche den Bereich, in dem das Ergebnis gezeichnet wird
+    draw.rectangle([(207, 83),(10, 64)], fill=255)
+
+    # Drehe das Bild um 180 Grad und aktualisiere das Zeichenobjekt
+    image = image.rotate(180, expand=True)
+    draw = ImageDraw.Draw(image)
+
+    # Zeichne das Ergebnis
+    draw.text([text_x, text_y], result)
+
+    # Drehe das Bild erneut um 180 Grad und aktualisiere das Zeichenobjekt
+    image = image.rotate(180, expand=True)
+    draw = ImageDraw.Draw(image)
+
+    # Aktualisiere das Display teilweise, um das gezeichnete Passwort anzuzeigen
+    epd.displayPartial(epd.getbuffer(image))
+
+def press_logic(num):
+    """
+    Verarbeitet die Logik, wenn ein Button gedrückt wird.
+    
+    Parameter:
+    num (int): Die Nummer des gedrückten Buttons.
+    """
+    global password, current_menue, oldRect
+
+    # Überprüfe, ob das aktuelle Menü das "marv menue" ist
+    if(current_menue.name == "marv menue"):
+        # Bewegung nach Norden
+        if num == 0:
+            if(Marv_menue.current_field.north is not None):
+                Marv_menue.current_field = Marv_menue.current_field.north
+                draw_currentField(Marv_menue.current_field)
+        # Bewegung nach Osten
+        elif num == 1:
+            if(Marv_menue.current_field.east is not None):
+                Marv_menue.current_field = Marv_menue.current_field.east
+                draw_currentField(Marv_menue.current_field)
+        # Bewegung nach Süden
+        elif num == 2:
+            if(Marv_menue.current_field.south is not None):
+                Marv_menue.current_field = Marv_menue.current_field.south
+                draw_currentField(Marv_menue.current_field)
+        # Bewegung nach Westen
+        elif num == 3:
+            if(Marv_menue.current_field.west is not None):
+                Marv_menue.current_field = Marv_menue.current_field.west
+                draw_currentField(Marv_menue.current_field)
+
+        # Auswahl bestätigen
+        elif num == 4:
+            if(Marv_menue.current_field.name == "passchecker"):
+                draw.rectangle([(250, 122), (0, 0)], outline=255, fill=255)
+                draw.rectangle([(208, 96), 41, 84], outline=0, width=1)
+                draw_keyboard()
+                oldRect = None
+                current_menue = Passchecker_menue
+
+            elif(Marv_menue.current_field.name == "baustelle"):
+                ## TODO: Emailchecker mit HaveIbeenPwned API (4Euro monatlich bruh)
+                pass
+
+            elif(Marv_menue.current_field.name == "exit"):
+                ## zurück ins hauptmenü
+                pass
+        elif num == 5:
+            ## Zurück ins Hauptmenü
+            pass
+    
+    # Überprüfe, ob das aktuelle Menü das "passchecker menue" ist
+    elif(current_menue.name == "passchecker menue"):
+        # Bewegung nach Norden
+        if num == 0:
+            if(Passchecker_menue.current_field.north is not None):
+                Passchecker_menue.current_field = Passchecker_menue.current_field.north
+                draw_currentField(Passchecker_menue.current_field)
+        # Bewegung nach Osten
+        elif num == 1:
+            if(Passchecker_menue.current_field.east is not None):
+                Passchecker_menue.current_field = Passchecker_menue.current_field.east
+                draw_currentField(Passchecker_menue.current_field)
+        # Bewegung nach Süden
+        elif num == 2:
+            if(Passchecker_menue.current_field.south is not None):
+                Passchecker_menue.current_field = Passchecker_menue.current_field.south
+                draw_currentField(Passchecker_menue.current_field)
+        # Bewegung nach Westen
+        elif num == 3:
+            if(Passchecker_menue.current_field.west is not None):
+                Passchecker_menue.current_field = Passchecker_menue.current_field.west
+                draw_currentField(Passchecker_menue.current_field)
+        # Auswahl bestätigen oder spezielle Tasten verarbeiten
+        elif num == 4:
+            if(Passchecker_menue.current_field.name == "Shift"):
+                if(Passchecker_menue.field_array[3].name == "-"):
+                    keyboard_uppercase()
+                    draw_keyboard()
+                    draw_currentField(Passchecker_menue.current_field)
+                    draw_password()
+                else:
+                    keyboard_lowercase()
+                    draw_keyboard()
+                    draw_password()
+            elif(Passchecker_menue.current_field.name == "Alt Gr"):
+                if(Passchecker_menue.field_array[38].name == "@"):
+                    keyboard_lowercase()
+                    draw_keyboard()
+                    draw_currentField(Passchecker_menue.current_field)
+                    draw_password()
+                else:
+                    keyboard_altGr()
+                    draw_keyboard()
+                    draw_currentField(Passchecker_menue.current_field)
+                    draw_password()
+            elif(Passchecker_menue.current_field.name == "back"):
+                if(len(password) > 0):
+                    password = password[0:-1]
+                    draw_password()
+            elif(Passchecker_menue.current_field.name == "exit"):
+                current_menue = Marv_menue
+                password = ""
+                draw.rectangle([(250, 122), (0, 0)], outline=255, fill=255)
+                draw_marv_menue()
+                oldRect = None
+                Marv_menue.current_field = field_passchecker
+                draw_currentField(Marv_menue.current_field)
+            elif(Passchecker_menue.current_field.name == "send"):
+                ergebnis = check_password(password)
+                draw_result(ergebnis)
+                print(ergebnis)
+            else:
+                password += Passchecker_menue.current_field.name
+                draw_password()
+        # Rücktaste drücken
+        elif num == 5:
+            if(len(password) > 0):
+                    password = password[0:-1]
+                    draw_password()
+                    
+
+def draw_keyboard():
+    """
+    Zeichnet die aktuelle Tastatur. Löscht den Bereich, in dem die Tastatur gezeichnet wird,
+    und rotiert das Bild zweimal um 180 Grad, um den Text und die Rechtecke zu zeichnen.
+    """
+    global draw, image
+    # Lösche den Bereich, in dem die Tastatur gezeichnet wird
+    draw.rectangle([(250, 65),(0, 0)], outline=255, fill=255)
+
+    # Drehe das Bild um 180 Grad und aktualisiere das Zeichenobjekt
+    image = image.rotate(180, expand=True)
+    draw = ImageDraw.Draw(image)
+
+    # Zeichne den Text für jede Taste in der Tastatur
+    for i in Passchecker_menue.field_array:
+        # Berechne die Textposition
+        text_x = (250 - i.x_0+1)
+        text_y = (122 - i.y_0-1)
+        draw.text((text_x, text_y), i.name, font=font15, fill=0)
+
+    # Drehe das Bild erneut um 180 Grad und aktualisiere das Zeichenobjekt
+    image = image.rotate(180, expand=True)
+    draw = ImageDraw.Draw(image)
+
+    # Zeichne die Rechtecke für jede Taste in der kleinen Tastatur
+    for i in Passchecker_menue.field_array:
+        draw.rectangle([(i.x_0, i.y_0), (i.x_1, i.y_1)], outline=0, width=1)
+
+    # Aktualisiere das Display teilweise, um die gezeichnete Tastatur anzuzeigen
+    epd.displayPartial(epd.getbuffer(image))
+
+def password_strength(password):
+    """
+    Bewertet die Stärke eines Passworts basierend auf verschiedenen Kriterien:
+    Länge, Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen.
+    
+    Parameter:
+    password (str): Das zu bewertende Passwort.
+    
+    Rückgabe:
+    int: Punktzahl, die die Stärke des Passworts repräsentiert.
+    """
+    points = 0
+
+    # Länge des Passworts
+    if len(password) >= 8:
+        points += 1
+    if len(password) >= 12:
+        points += 1
+
+    # Enthält Großbuchstaben
+    if re.search(r'[A-Z]', password):
+        points += 1
+
+    # Enthält Kleinbuchstaben
+    if re.search(r'[a-z]', password):
+        points += 1
+
+    # Enthält Zahlen
+    if re.search(r'[0-9]', password):
+        points += 1
+
+    # Enthält Sonderzeichen
+    if re.search(r'[\W_]', password):
+        points += 1
+
+    return points
+
+def check_rockyou(password, rockyou_path="rockyou.txt"):
+    try:
+        with open(rockyou_path, 'r', encoding='latin-1') as file:
+            for line in file:
+                if line.strip() == password:
+                    return True
+        return False
+    except FileNotFoundError:
+        print(f"Die Datei {rockyou_path} wurde nicht gefunden.")
+        return False
+
+def add_to_list(password, pwdPath="pwd.txt"):
+    """
+    Fügt ein Passwort zur RockYou-Liste hinzu, falls es nicht bereits vorhanden ist.
+    
+    Parameter:
+    password (str): Das hinzuzufügende Passwort.
+    rockyou_path (str): Pfad zur RockYou-Datei.
+    """
+    try:
+        with open(pwdPath, 'a', encoding='latin-1') as file:
+            file.write(password + '\n')
+    except Exception as e:
+        print(f"Fehler beim Schreiben in die Datei {pwdPath}: {e}")
+
+def check_password(password, rockyou_path="rockyou.txt"):
+    """
+    Überprüft ein Passwort auf seine Stärke und ob es in der RockYou-Liste enthalten ist.
+    Falls das Passwort nicht in der RockYou-Liste enthalten ist, wird es hinzugefügt.
+    
+    Parameter:
+    password (str): Das zu überprüfende Passwort.
+    rockyou_path (str): Pfad zur RockYou-Datei.
+    
+    Rückgabe:
+    str: Bewertung des Passworts ('Schwach', 'Mittel', 'Stark' oder 'Schwach (in der RockYou-Liste)').
+    """
+    if check_rockyou(password, rockyou_path):
+        return "Schwach (in der RockYou-Liste)"
+
+    add_to_list(password)
+    strength = password_strength(password)
+    if strength <= 2:
+        return "Schwach"
+    elif strength == 3 or 4:
+        return "Mittel"
+    else:
+        return "Stark"
 
 
-# gpio button
-btn_links = gpiozero.Button(19)
-btn_rechts = gpiozero.Button(20)
-btn_oben = gpiozero.Button(16)
-btn_unten = gpiozero.Button(26)
-btn_a = gpiozero.Button(6)
-btn_b = gpiozero.Button(12)
-
+# Ereignisbehandlung für die GPIO-Buttons einrichten
+# Wenn die Buttons gedrückt werden, wird die entsprechende Funktion mit einem Parameter aufgerufen
 btn_links.when_pressed = lambda: press_logic(3)
 btn_rechts.when_pressed = lambda: press_logic(1)
 btn_unten.when_pressed = lambda: press_logic(2)
 btn_oben.when_pressed = lambda: press_logic(0)
 btn_a.when_pressed = lambda: press_logic(4)
-
-
-# Main Menü Programm
-picdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pic')
-libdir = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
-# setup font
-font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 8)
-
+btn_b.when_pressed = lambda: press_logic(5)
 
 
 # Display setup
 try:
+    # Initialisiere das E-Paper-Display
     epd = epd2in13_V4.EPD()
-    epd.init_fast()
-    epd.Clear(0xFF)
+    epd.init_fast()  # Schnelle Initialisierung des Displays
+    epd.Clear(0xFF)  # Bildschirm löschen (mit weißem Hintergrund)
 
-    # Image setup
+    # Bildsetup
+    # Erstelle ein neues Bild mit den Dimensionen des Displays und einem weißen Hintergrund
     image = Image.new('1', (epd.height, epd.width), 255)
-    draw = ImageDraw.Draw(image)
-    draw_currentField(Passchecker.current_field)
+    draw = ImageDraw.Draw(image)  # Zeichnen-Objekt initialisieren
+    draw_currentField(Marv_menue.current_field)  # Zeichne das aktuelle Feld
 
-    for i in tastatur_klein:
-        # Calculate text position (center of the rectangle)
-        text_x = (250 - i.x_0+1)
-        text_y = (122 - i.y_0-1)
-        draw.text((text_x, text_y), i.name, font=font15, fill=0)
+    draw_marv_menue()  # Zeichne das Marv-Menü
 
-    image = image.rotate(180, expand=True)  # Rotate the image
-    draw = ImageDraw.Draw(image)
-
-    # Draw rectangles and text
-    for i in tastatur_klein:
-        draw.rectangle([(i.x_0, i.y_0), (i.x_1, i.y_1)], outline=0, width=1)
-    draw.rectangle([(208, 96), 41, 84], outline=0, width=1)
-
-
-    # Draw image to screen
+    # Zeichne das Bild auf dem Bildschirm
     epd.displayPartBaseImage(epd.getbuffer(image))
-    pause()
-    epd.sleep()
+    pause()  # Halte den Prozess an
+    epd.sleep()  # Versetze das Display in den Schlafmodus
 
 except IOError as e:
+    # Fehlerbehandlung bei Ein-/Ausgabefehlern
     logging.info(e)
 
 except KeyboardInterrupt:
+    # Fehlerbehandlung bei manueller Unterbrechung (Ctrl + C)
     logging.info("ctrl + c:")
-    epd2in13_V4.epdconfig.module_exit(cleanup=True)
-    exit()
+    epd2in13_V4.epdconfig.module_exit(cleanup=True)  # Modul-Exit aufrufen und aufräumen
+    exit()  # Programm beenden

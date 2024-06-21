@@ -166,8 +166,18 @@ def display_gps():
         rotated_image = image.rotate(180, expand=True)
         epd.displayPartial(epd.getbuffer(rotated_image))
         wait_for_exit()
-    except (gpsd.NoFixError, gpsd.GPSDSError) as e:
+    except Exception as e:
         logging.error(f"GPS error {e}")
+        display_no_gps()
+        
+
+def display_no_gps():
+    image = Image.new('1', (epd.height, epd.width), 255)
+    draw = ImageDraw.Draw(image)
+    draw.text((10, 40), "No GPS in use", font=font, fill=0)
+    rotated_image = image.rotate(180, expand=True)
+    epd.displayPartial(epd.getbuffer(rotated_image))
+    wait_for_exit()
 
 # logik für tastendruck
 def press_logic(num):

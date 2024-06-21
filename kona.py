@@ -209,8 +209,10 @@ def quiz():
     kona.happyness += 10
 
 
+
 btn_a.when_pressed = select
 btn_b.when_pressed = menuOnOff
+# btn_b.when_pressed = start
 
 btn_links.when_pressed = courserleft
 btn_rechts.when_pressed = courserright
@@ -249,7 +251,7 @@ class Kona:
             if c == len(eggs):
                 time.sleep(0.5)
             else:
-                time.sleep(0.1) 
+                time.sleep(0.1)
             tb.stop()
             epd.displayPartial(epd.getbuffer(image))
             time.sleep(1)
@@ -283,6 +285,7 @@ class Kona:
     def eat():
         global foodOnScreen
         if foodOnScreen:
+            kona.move_to_food()
             while foodOnScreen > 0:
                 kona.img = eat
                 kona.food = kona.food + 1
@@ -347,6 +350,18 @@ class Kona:
         poopPosX = kona.x - 20
         poopPosY = kona.y + 32
 
+    def move_to_food():
+        if kona.x < 150:
+            kona.img = walk.transpose(Image.FLIP_LEFT_RIGHT)
+            while kona.x < 150:
+                kona.x += 10
+                updateScreen()
+        else:
+            kona.img = walk
+            while kona.x > 150:
+                kona.x -= 10
+                updateScreen()
+
 
 kona = Kona
 animations = [kona.walkRight, kona.walkleft, kona.bored, kona.eat, kona.evolve, kona.sleep]
@@ -376,8 +391,8 @@ try:
         if kona.haspooped and kona.happyness - 1 >= 0:
             kona.happyness -= 1
         if len(cachedAnimations) >= 1:
-            for i in cachedAnimations:
-                i()
+            for animation in cachedAnimations:
+                animation()
             cachedAnimations = []
         if kona.happyness >= 80 and kona.happy not in animations:
             animations.append(kona.happy)

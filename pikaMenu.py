@@ -147,6 +147,18 @@ btn_rechts.when_pressed = lambda: press_logic(1)
 btn_oben.when_pressed = lambda: press_logic(2)
 btn_unten.when_pressed = lambda: press_logic(3)
 
+
+def start():
+    os.system("/home/pi/pika/kona.py")
+
+
+def startb():
+    os.system("./marv.py")
+
+
+btn_a.when_pressed = startb
+btn_b.when_pressed = start
+
 font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
  
 try:

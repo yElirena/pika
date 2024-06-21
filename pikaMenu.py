@@ -132,6 +132,17 @@ def press_logic(num):
         elif (main_menue.current_field.name == "Marv"):
             main_menue.set_current_field(main_menue.field_array[1][1])
             draw_current_field()
+    elif num == 4:
+        if(main_menue.current_field.name == "Thomas"):
+            pass
+        elif(main_menue.current_field.name == "Marv"):
+            os.system("./marv.py")
+            exit()
+        elif(main_menue.current_field.name == "Roman"):
+            os.system("./kona.py")
+            exit()
+        elif(main_menue.current_field.name == "Marie"):
+            pass
  
  
 # gpio button
@@ -146,18 +157,9 @@ btn_links.when_pressed = lambda: press_logic(0)
 btn_rechts.when_pressed = lambda: press_logic(1)
 btn_oben.when_pressed = lambda: press_logic(2)
 btn_unten.when_pressed = lambda: press_logic(3)
+btn_a.when_pressed = lambda: press_logic(4)
 
 
-def start():
-    os.system("/home/pi/pika/kona.py")
-
-
-def startb():
-    os.system("./marv.py")
-
-
-btn_a.when_pressed = startb
-btn_b.when_pressed = start
 
 font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
  

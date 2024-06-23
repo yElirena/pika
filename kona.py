@@ -72,6 +72,7 @@ def imagesetup():
 
     healthbar()
 
+
 def background():
     global draw, image
     background = Image.open(os.path.join(picdir, 'background.bmp'))
@@ -149,13 +150,13 @@ def drawMenuScreen():
             y = 78
             x1 = x + 25
             y1 = y + 17
-            
+
         draw.rectangle((x, y, x1, y1), outline=0, width=2)
         draw.text((30, 42), 'quiz', font=font25, fill=0)
         draw.text((90, 42), 'Meal', font=font25, fill=0)
         draw.text((155, 42), 'clean', font=font25, fill=0)
         draw.text((94, 24), f'Meals left: {mealLeft}', font=font10, fill=0)
-        draw.text((205, 80), 'Exit' , font=font10, fill=0)
+        draw.text((205, 80), 'Exit', font=font10, fill=0)
 
 
 # Menu functions
@@ -213,7 +214,6 @@ def select():
         kona.alive = False
         os.system("/home/pi/pika/pikaMenu.py")
         sys.exit()
-        
 
 
 # interact functions
@@ -233,7 +233,6 @@ def quiz():
     global mealLeft
     mealLeft += 1
     kona.happyness += 10
-
 
 
 btn_a.when_pressed = select

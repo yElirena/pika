@@ -947,11 +947,11 @@ def press_logic(num):
 
             elif(Marv_menue.current_field.name == "exit"):
                 ## zurück ins hauptmenü
-                os.system("./pikaMenu.py")
+                os.system("/home/pi/pika/pikaMenu.py")
                 exit()
         elif num == 5:
             ## Zurück ins Hauptmenü
-            os.system("./pikaMenu.py")
+            os.system("/home/pi/pika/pikaMenu.py")
             exit()
     
     # Überprüfe, ob das aktuelle Menü das "passchecker menue" ist

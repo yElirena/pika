@@ -134,12 +134,13 @@ def press_logic(num):
             draw_current_field()
     elif num == 4:
         if(main_menue.current_field.name == "Thomas"):
-            pass
+            os.system("/home/pi/pika/sensor.py")
+            exit()
         elif(main_menue.current_field.name == "Marv"):
-            os.system("./marv.py")
+            os.system("/home/pi/pika/marv.py")
             exit()
         elif(main_menue.current_field.name == "Roman"):
-            os.system("./kona.py")
+            os.system("/home/pi/pika/kona.py")
             exit()
         elif(main_menue.current_field.name == "Marie"):
             pass

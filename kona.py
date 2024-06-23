@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding:utf-8 -*-
 import os
+import sys
 import gpiozero
 import logging
 from waveshare_epd import epd2in13_V4
@@ -69,6 +70,7 @@ def imagesetup():
     image = Image.new('1', (epd.height, epd.width), 255)
     draw = ImageDraw.Draw(image)
 
+    healthbar()
 
 def background():
     global draw, image
@@ -109,9 +111,9 @@ def updateScreen():
     global image, draw
     imagesetup()
     background()
-    healthbar()
     drawpoop()
-    image.paste(kona.img, (kona.x, kona.y))
+    if kona.hashatched:
+        image.paste(kona.img, (kona.x, kona.y))
     drawFood()
     drawMenuScreen()
     image = image.transpose(Image.ROTATE_180)
@@ -125,20 +127,35 @@ def drawMenuScreen():
         draw.rectangle((20, 20, 230, 100), outline=0, width=4)
         x = 0
         y = 0
+        x1 = 0
+        y1 = 0
         if courser == 0:
             x = 25
-            y = x + 56
+            y = 37
+            x1 = x + 56
+            y1 = 78
         elif courser == 1:
             x = 85
-            y = x + 63
+            y = 37
+            x1 = x + 63
+            y1 = 78
         elif courser == 2:
             x = 150
-            y = x + 67
-        draw.rectangle((x, 37, y, 78), outline=0, width=2)
+            y = 37
+            x1 = x + 67
+            y1 = 78
+        elif courser == 3:
+            x = 200
+            y = 78
+            x1 = x + 25
+            y1 = y + 17
+            
+        draw.rectangle((x, y, x1, y1), outline=0, width=2)
         draw.text((30, 42), 'quiz', font=font25, fill=0)
         draw.text((90, 42), 'Meal', font=font25, fill=0)
         draw.text((155, 42), 'clean', font=font25, fill=0)
-        draw.text((94, 24), f'Meal left: {mealLeft}', font=font10, fill=0)
+        draw.text((94, 24), f'Meals left: {mealLeft}', font=font10, fill=0)
+        draw.text((205, 80), 'Exit' , font=font10, fill=0)
 
 
 # Menu functions
@@ -154,6 +171,7 @@ def printsStats():
 
 def menuOnOff():
     global menuSwitch
+    kona.beep(480, 0.1)
     if menuSwitch:
         menuSwitch = False
     else:
@@ -163,15 +181,17 @@ def menuOnOff():
 # selectable menu function
 def courserleft():
     global courser
+    kona.beep(420, 0.1)
     if courser - 1 >= 0:
         courser -= 1
     else:
-        courser = 2
+        courser = 3
 
 
 def courserright():
     global courser
-    if courser + 1 <= 2:
+    kona.beep(420, 0.1)
+    if courser + 1 <= 3:
         courser += 1
     else:
         courser = 0
@@ -179,6 +199,7 @@ def courserright():
 
 def select():
     global courser
+    kona.beep(480, 0.1)
     if courser == 2 and menuSwitch:
         clean()
         menuOnOff()
@@ -188,6 +209,11 @@ def select():
     elif courser == 0 and menuSwitch:
         quiz()
         menuOnOff()
+    elif courser == 3 and menuSwitch:
+        kona.alive = False
+        os.system("/home/pi/pika/pikaMenu.py")
+        sys.exit()
+        
 
 
 # interact functions
@@ -226,6 +252,7 @@ class Kona:
     exhausted = 0
     haspooped = False
     haseaten = False
+    hashatched = False
     alive = True
     evolved = False
     x = 100
@@ -246,7 +273,7 @@ class Kona:
             c += 1
             egg = egg.rotate(180)
             egg = egg.resize((64, 64), Image.ANTIALIAS)
-            image.paste(egg, (kona.x, kona.y - 20))
+            image.paste(egg, (kona.x, kona.y - 22))
             tb.play(gpiozero.tones.Tone.from_frequency(440))
             if c == len(eggs):
                 time.sleep(0.5)
@@ -254,7 +281,8 @@ class Kona:
                 time.sleep(0.1)
             tb.stop()
             epd.displayPartial(epd.getbuffer(image))
-            time.sleep(1)
+            time.sleep(0.4)
+            kona.hashatched = True
 
     def walkRight():
         global draw, image
@@ -283,24 +311,31 @@ class Kona:
         kona.img = normal
 
     def eat():
+        global foodOnScreen
         kona.move_to_food()
         while foodOnScreen > 0:
             kona.img = eat
-            kona.food = kona.food + 1
+            if kona.food + 1 < 9:
+                kona.food = kona.food + 1
+            kona.beep(480, 0.1)
             updateScreen()
             kona.img = normal
             foodOnScreen -= 1
+            kona.beep(480, 0.2)
             updateScreen()
         kona.happyness += 10
         kona.haseaten = True
 
     def happy():
         kona.img = happy1
+        kona.beep(550, 0.2)
         updateScreen()
         kona.img = happy2
+        kona.beep(580, 0.2)
         updateScreen()
         if kona.evolved:
             kona.img = happy3
+            kona.peep(620, 0.2)
             updateScreen()
         kona.img = normal
 
@@ -348,6 +383,8 @@ class Kona:
         kona.haseaten = False
         poopPosX = kona.x - 20
         poopPosY = kona.y + 32
+        kona.beep(420, 0.1)
+        kona.beep(440, 0.2)
 
     def move_to_food():
         if kona.x < 150:
@@ -360,6 +397,13 @@ class Kona:
             while kona.x > 150:
                 kona.x -= 10
                 updateScreen()
+
+    def beep(num, dur):
+        tb.play(gpiozero.tones.Tone.from_frequency(num))
+        time.sleep(dur)
+        tb.stop()
+
+    # TODO kona gravestone and death animation
 
 
 kona = Kona
@@ -379,10 +423,10 @@ try:
 
     updateScreen()
 
-    # kona.hatch()
+    kona.hatch()
 
     while kona.alive:
-        printsStats()
+        # printsStats()
         if foodOnScreen > 0:
             animations.append(kona.eat)
         elif foodOnScreen == 0 and kona.eat in animations:
@@ -395,18 +439,27 @@ try:
 
         if kona.haspooped and kona.happyness - 1 >= 0:
             kona.happyness -= 1
+
         if len(cachedAnimations) >= 1:
             for animation in cachedAnimations:
                 animation()
             cachedAnimations = []
+
         if kona.happyness >= 80 and kona.happy not in animations:
             animations.append(kona.happy)
         elif kona.happy in animations and kona.happyness < 80:
             animations.remove(kona.happy)
+
         random.choice(animations)()
         time.sleep(random.randint(1, 2))
         updateScreen()
         kona.age += 1
+
+        if kona.age % 40 == 0:
+            kona.food -= 1
+
+        if kona.food < 0:
+            kona.alive = False
 
     epd.sleep()
 

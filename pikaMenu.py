@@ -161,9 +161,8 @@ btn_unten.when_pressed = lambda: press_logic(3)
 btn_a.when_pressed = lambda: press_logic(4)
 
 
-
 font15 = ImageFont.truetype(os.path.join(picdir, 'Font.ttc'), 15)
- 
+
 try:
     epd = epd2in13_V4.EPD()
     epd.init()

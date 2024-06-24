@@ -112,6 +112,7 @@ def updateScreen():
     global image, draw
     imagesetup()
     background()
+    healthbar()
     drawpoop()
     if kona.hashatched:
         image.paste(kona.img, (kona.x, kona.y))
@@ -212,8 +213,7 @@ def select():
         menuOnOff()
     elif courser == 3 and menuSwitch:
         kona.alive = False
-        os.system("/home/pi/pika/pikaMenu.py")
-        sys.exit()
+        os.system("python3 /home/pi/pika/pikaMenu.py")
 
 
 # interact functions

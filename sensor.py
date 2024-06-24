@@ -197,7 +197,7 @@ def wait_for_exit():
 
 def return_to_testmenu():
     epd2in13_V4.epdconfig.module_exit(cleanup=True)
-    sys.exit()
+    os.system('python3 /home/pi/pika/pikaMenu.py')
 
 # buttons initialisieren
 btn_oben = Button(16)
